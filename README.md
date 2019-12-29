@@ -1,2 +1,2 @@
 # FitnessForService.jl
- API 579 Fitness For Service Methodolgies
+ API 579 Fitness For Service Methodologies

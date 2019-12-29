@@ -1,0 +1,239 @@
+@static if VERSION < v"0.7.0-DEV.2005"
+    using Base.Test
+else
+    using Test
+end
+
+##############################################################################################################
+# Test each function and condition and ensure working correctly. Check units and categorizations correct etc..
+# run full script against API 579 example code
+##############################################################################################################
+
+@testset "applicability.jl" begin
+    @testset "Design Code Applicability" begin
+        case_1 = DesignCodeCriteria("ASME B&PV Code, Section VIII, Division 1")
+        case_2 = DesignCodeCriteria("ASME B&PV Code, Section VIII, Division 2")
+        case_3 = DesignCodeCriteria("ASME B&PV Code, Section I")
+        case_4 = DesignCodeCriteria("ASME B31.1 Piping Code")
+        case_5 = DesignCodeCriteria("ASME B31.3 Piping Code")
+        case_6 = DesignCodeCriteria("ASME B31.4 Piping Code")
+        case_7 = DesignCodeCriteria("ASME B31.8 Piping Code")
+        case_8 = DesignCodeCriteria("ASME B31.12 Piping Code")
+        case_9 = DesignCodeCriteria("API Std 650")
+        case_10 = DesignCodeCriteria("API Std 620")
+        case_11 = DesignCodeCriteria("API Std 530")
+        case_12 = DesignCodeCriteria("Other Recognized Codes and Standards")
+        case_13 = DesignCodeCriteria("EMMUA")
+        @test case_1 == 1
+        @test case_2 == 1
+        @test case_3 == 1
+        @test case_4 == 1
+        @test case_5 == 1
+        @test case_6 == 1
+        @test case_7 == 1
+        @test case_8 == 1
+        @test case_9 == 1
+        @test case_10 == 1
+        @test case_11 == 1
+        @test case_12 == 0 # other code and standards refer to API 579
+        @test case_13 == 0 # other code and standards refer to API 579
+    end
+
+    @testset "Material Toughness" begin
+        case_1 = MaterialToughness("Certain")
+        case_2 = MaterialToughness("Uncertain")
+        @test case_1 == 1
+        @test case_2 == 0
+    end
+
+    @testset "Cyclic Service" begin
+        case_1 = CyclicService(100,"Meets Part 14") # check both meet
+        case_2 = CyclicService(160,"Meets Part 14") # check only 1x meet
+        case_3 = CyclicService(100,"Does not meet Part 14") # check only 1x meet
+        case_4 = CyclicService(160,"Does not meet Part 14") # check both do not meet
+        @test case_1 == 1
+        @test case_2 == 0
+        @test case_3 == 0
+        @test case_4 == 0
+    end
+
+    @testset "Component Type and Level 1,2,3 Applicability" begin
+        # piping tests with Carbon and Low Alloy Steels
+        # inches
+        case_1 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=150.0, units="lbs-in-psi")
+        case_2 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=6.0, design_temperature=150.0, units="lbs-in-psi")
+        case_3 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=10.0, design_temperature=150.0, units="lbs-in-psi")
+        case_4 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=24.0, design_temperature=150.0, units="lbs-in-psi")
+        case_5 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=500.0, units="lbs-in-psi")
+        case_6 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=6.0, design_temperature=500.0, units="lbs-in-psi")
+        case_7 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=10.0, design_temperature=500.0, units="lbs-in-psi")
+        case_8 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=24.0, design_temperature=500.0, units="lbs-in-psi")
+        case_9 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_10 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=6.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_11 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=10.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_12 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=24.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_13 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - With Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=150.0, units="lbs-in-psi")
+        # piping tests with High Alloy and Nonferrous Steels
+        case_14 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=150.0, units="lbs-in-psi")
+        case_15 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=6.0, design_temperature=150.0, units="lbs-in-psi")
+        case_16 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=10.0, design_temperature=150.0, units="lbs-in-psi")
+        case_17 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=24.0, design_temperature=150.0, units="lbs-in-psi")
+        case_18 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=500.0, units="lbs-in-psi")
+        case_19 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=6.0, design_temperature=500.0, units="lbs-in-psi")
+        case_20 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=12.0, design_temperature=500.0, units="lbs-in-psi")
+        case_21 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=24.0, design_temperature=500.0, units="lbs-in-psi")
+        case_22 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_23 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=6.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_24 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=10.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_25 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=24.0, design_temperature=-100.0, units="lbs-in-psi")
+        case_26 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - With Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=1.0, design_temperature=150.0, units="lbs-in-psi")
+        # piping tests with Carbon and Low Alloy Steels
+        # nmm-mm-mpa
+        case_27 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_28 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=152.4, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_29 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=254.0, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_30 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=609.6, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_31 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=260.0, units="nmm-mm-mpa")
+        case_32 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=152.4, design_temperature=260.0, units="nmm-mm-mpa")
+        case_33 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=254.0, design_temperature=260.0, units="nmm-mm-mpa")
+        case_34 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=609.6, design_temperature=260.0, units="nmm-mm-mpa")
+        case_35 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=-50.0, units="nmm-mm-mpa")
+        case_36 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=152.4, design_temperature=-50.0, units="nmm-mm-mpa")
+        case_37 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=254.0, design_temperature=-50.0, units="nmm-mm-mpa")
+        case_38 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=609.6, design_temperature=-50.0, units="nmm-mm-mpa")
+        case_39 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - With Structural Attachments", vessel_orientation="", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=65.5556, units="nmm-mm-mpa")
+        # piping tests with High Alloy and Nonferrous Steels
+        case_40 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_41 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=152.4, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_42 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=254.0, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_43 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=609.6, design_temperature=65.5556, units="nmm-mm-mpa")
+        case_44 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=260.0, units="nmm-mm-mpa")
+        case_45 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=152.4, design_temperature=260.0, units="nmm-mm-mpa")
+        case_46 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=304.8, design_temperature=260.0, units="nmm-mm-mpa")
+        case_47 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=609.6, design_temperature=260.0, units="nmm-mm-mpa")
+        case_48 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=-37.7778, units="nmm-mm-mpa")
+        case_49 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=152.4, design_temperature=-37.7778, units="nmm-mm-mpa")
+        case_50 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=254.0, design_temperature=-37.7778, units="nmm-mm-mpa")
+        case_51 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=609.6, design_temperature=-37.7778, units="nmm-mm-mpa")
+        case_52 = Part5ComponentTypeAssessmentApplicability("Straight Section of Piping, Eblow or Bend - With Structural Attachments", vessel_orientation="", material="High Alloy and Nonferrous Steels", D=0.0,Lss=0.0,H=0.0, NPS=25.4, design_temperature=65.5556, units="nmm-mm-mpa")
+        # Cylindrical Vessel and , Conical Shell Section tests - limited to dimensional data stated in API 579 Figure 4.3 and Figure 4.4
+        # lbs-in-psi
+        case_53 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=120.0,Lss=96.0,H=300.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_54 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=144.0,Lss=96.0,H=300.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_55 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=120.0,Lss=96.0,H=300.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_56 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=144.0,Lss=96.0,H=300.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_57 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=120.0,Lss=96.0,H=300.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_58 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=144.0,Lss=96.0,H=1440.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_59 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=120.0,Lss=96.0,H=300.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        case_60 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=144.0,Lss=96.0,H=1440.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
+        # nmm-mm-mpa
+        case_61 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=3048.0,Lss=2438.4,H=7620.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_62 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=7620.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_63 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=3048.0,Lss=2438.4,H=7620.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_64 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=7620.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_65 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3048.0,Lss=2438.4,H=7620.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_66 = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_67 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3048.0,Lss=2438.4,H=7620.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_68 = Part5ComponentTypeAssessmentApplicability("Conical Shell Section", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        # "Spherical Vessel","Storage Sphere"
+        case_69 = Part5ComponentTypeAssessmentApplicability("Spherical Vessel", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_70 = Part5ComponentTypeAssessmentApplicability("Storage Sphere", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        # "Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head"
+        case_71 = Part5ComponentTypeAssessmentApplicability("Spherical Formed Head", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_72 = Part5ComponentTypeAssessmentApplicability("Elliptical Formed Head", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_73 = Part5ComponentTypeAssessmentApplicability("Torispherical Formed Head", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        # "Cylindrical Atmosperic Storage Tank Shell Courses"
+        case_74 = Part5ComponentTypeAssessmentApplicability("Cylindrical Atmosperic Storage Tank Shell Courses", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        # "Pressure Vessel Nozzles","Tank Nozzles","Piping Branch Connections","Reinforcement Zone of Conical Sections","Flanges","Cylinder to Flat Head Junction","Integral Tubesheet Connections"
+        case_75 = Part5ComponentTypeAssessmentApplicability("Pressure Vessel Nozzles", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_76 = Part5ComponentTypeAssessmentApplicability("Tank Nozzles", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_77 = Part5ComponentTypeAssessmentApplicability("Piping Branch Connections", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_78 = Part5ComponentTypeAssessmentApplicability("Reinforcement Zone of Conical Sections", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_79 = Part5ComponentTypeAssessmentApplicability("Flanges", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_80 = Part5ComponentTypeAssessmentApplicability("Cylinder to Flat Head Junction", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+        case_81 = Part5ComponentTypeAssessmentApplicability("Integral Tubesheet Connections", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
+
+
+        @test sum(case_1) == 3
+        @test sum(case_2) == 3
+        @test sum(case_3) == 3
+        @test sum(case_4) == 2 # diameter is out of temperature range allowable for Type A
+        @test sum(case_5) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_6) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_7) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_8) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the maximum allowable for Type A
+        @test sum(case_9) == 2 # temperature exceeds the minimum allowable for Type A
+        @test sum(case_10) == 2 # temperature exceeds the minimum allowable for Type A
+        @test sum(case_11) == 2 # temperature exceeds the minimum allowable for Type A
+        @test sum(case_12) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the minimum allowable for Type A
+        @test sum(case_13) == 2 # piping has structural attachments therefore is a Class B, type 1 component
+        @test sum(case_14) == 3 # passing case
+        @test sum(case_15) == 3 # passing case
+        @test sum(case_16) == 3 # passing case
+        @test sum(case_17) == 2 # diameter is out of temperature range allowable for Type A
+        @test sum(case_18) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_19) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_20) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_21) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the maximum allowable for Type A
+        @test sum(case_22) == 3 # temperature within -150F for high alloy material for Type A
+        @test sum(case_23) == 2 # temperature exceeds -50F minimum for high alloy material for Type A
+        @test sum(case_24) == 2 # temperature exceeds -50F minimum for high alloy material for Type A
+        @test sum(case_25) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the minimum allowable for Type A
+        @test sum(case_26) == 2 # piping has structural attachments therefore is a Class B, type 1 component
+        @test sum(case_27) == 3
+        @test sum(case_28) == 3
+        @test sum(case_29) == 3
+        @test sum(case_30) == 2 # diameter is out of temperature range allowable for Type A
+        @test sum(case_31) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_32) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_33) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_34) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the maximum allowable for Type A
+        @test sum(case_35) == 2 # temperature exceeds the minimum allowable for Type A
+        @test sum(case_36) == 2 # temperature exceeds the minimum allowable for Type A
+        @test sum(case_37) == 2 # temperature exceeds the minimum allowable for Type A
+        @test sum(case_38) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the minimum allowable for Type A
+        @test sum(case_39) == 2 # piping has structural attachments therefore is a Class B, type 1 component
+        @test sum(case_40) == 3 # passing case
+        @test sum(case_41) == 3 # passing case
+        @test sum(case_42) == 3 # passing case
+        @test sum(case_43) == 2 # diameter is out of temperature range allowable for Type A
+        @test sum(case_44) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_45) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_46) == 2 # temperature exceeds the maximum allowable for Type A
+        @test sum(case_47) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the maximum allowable for Type A
+        @test sum(case_48) == 3 # temperature within -150F for high alloy material for Type A
+        @test sum(case_49) == 3 # temperature within -150F for high alloy material for Type A
+        @test sum(case_50) == 3 # temperature within -150F for high alloy material for Type A
+        @test sum(case_51) == 2 # diameter is out of temperature range allowable for Type A and temperature exceeds the minimum allowable for Type A
+        @test sum(case_52) == 2 # piping has structural attachments therefore is a Class B, type 1 component
+        @test sum(case_53) == 3 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has been met
+        @test sum(case_54) == 2 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has not been met
+        @test sum(case_55) == 3 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has been met
+        @test sum(case_56) == 2 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has not been met
+        @test sum(case_57) == 3 # vertical vessel (H/D <= 3 && H <= 100) has been met
+        @test sum(case_58) == 2 # vertical vessel (H/D <= 3 && H <= 100) has not been met
+        @test sum(case_59) == 3 # vertical vessel (H/D <= 3 && H <= 100) has been met
+        @test sum(case_60) == 2 # vertical vessel (H/D <= 3 && H <= 100) has not been met
+        @test sum(case_61) == 3 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has been met
+        @test sum(case_62) == 2 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has not been met
+        @test sum(case_63) == 3 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has been met
+        @test sum(case_64) == 2 # horizontal vessel (Lss/D <= 2.5 && D <= 10.0) has not been met
+        @test sum(case_65) == 3 # vertical vessel (H/D <= 3 && H <= 100) has been met
+        @test sum(case_66) == 2 # vertical vessel (H/D <= 3 && H <= 100) has not been met
+        @test sum(case_67) == 3 # vertical vessel (H/D <= 3 && H <= 100) has been met
+        @test sum(case_68) == 2 # vertical vessel (H/D <= 3 && H <= 100) has not been met
+        @test sum(case_69) == 3 # type A
+        @test sum(case_70) == 3 # type A
+        @test sum(case_71) == 3 # type A
+        @test sum(case_72) == 3 # type A
+        @test sum(case_73) == 3 # type A
+        @test sum(case_74) == 3 # type A
+        @test sum(case_75) == 1 # type b class 2
+        @test sum(case_76) == 1 # type b class 2
+        @test sum(case_77) == 1 # type b class 2
+        @test sum(case_78) == 1 # type b class 2
+        @test sum(case_79) == 1 # type b class 2
+        @test sum(case_80) == 1 # type b class 2
+        @test sum(case_81) == 1 # type b class 2
+    end
+end
