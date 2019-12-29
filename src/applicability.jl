@@ -28,8 +28,6 @@ function DesignCodeCriteria(x::String)::Int64
 end # let end
 end
 
-design = DesignCodeCriteria("ASME B31.3 Piping Code")
-
 # Sufficient Material Toughness
 @doc """
     MaterialToughness(x::String)::Int64
@@ -51,8 +49,6 @@ function MaterialToughness(x::String)::Int64
     return material_toughness
 end
 
-toughness = MaterialToughness("Certain")
-
 # Cylic Service
 @doc """
     CyclicService(cycles::Int64)::Int64
@@ -71,40 +67,38 @@ function CyclicService(cycles::Int64, y::String)::Int64
     return cyclic_service
 end
 
-cylic = CyclicService(100, "Meets Part 14")
-
 # Limitations on component types and applied loads
 @doc """
     Part5ComponentTypeAssessmentApplicability(component::String, vessel_orientation::String, material::String, D::Float64,Lss::Float64,H::Float64, NPS::Int64, design_temperature::Float64, units::String)::Array{Int64}
 
-5.2.5 Applicability of the Level 1 and Level 2 Assessment Procedures
-Level 1 Assessment – Type A Components - Subject to Internal Pressure
-Level 2 Assessment – Type A and Type B, Class 1 components
-Level 3 Assessment can be performed when the Level 1 and Level 2 Assessment procedures do not apply
+5.2.5 Applicability of the Level 1 and Level 2 Assessment Procedures\n
+Level 1 Assessment – Type A Components - Subject to Internal Pressure\n
+Level 2 Assessment – Type A and Type B, Class 1 components subject to internal pressure, external pressure, and supplemental loads\n
+Level 3 Assessment - Performed when the Level 1 and Level 2 Assessment procedures do not apply\n
 
-Figure 4.3 – Criteria for a Horizontal Pressure Vessel or Heat Exchanger to be Categorized as Type A Components
-Lss = Center to Center Support Width
-D = Outside Diameter :: If the horizontal vessel or heat exchanger contains conical transitions, the diameter D shall be based on the minimum inside diameter.
+Figure 4.3 – Criteria for a Horizontal Pressure Vessel or Heat Exchanger to be Categorized as Type A Components\n
+Lss = length between saddle supports for horizontal pressure vessels and heat exchangers\n
+D = Outside Diameter :: If the horizontal vessel or heat exchanger contains conical transitions, the diameter D shall be based on the minimum inside diameter.\n
 
-Figure 4.4 – Criteria for a Vertical Pressure Vessel to be Categorized as Type A Components
-H = Vessel Height - bottom of skirt to top of the head
-D = Outside Diameter :: If the horizontal vessel or heat exchanger contains conical transitions, the diameter D shall be based on the minimum inside diameter.
+Figure 4.4 – Criteria for a Vertical Pressure Vessel to be Categorized as Type A Components\n
+H = Vessel Height - bottom of skirt to top of the head\n
+D = Outside Diameter :: If the horizontal vessel or heat exchanger contains conical transitions, the diameter D shall be based on the minimum inside diameter.\n
 
-Figure 4.5 – Temperature Criteria for Piping Categorized as a Type A Component
-Nominal pipe size and design temperatrues to qualify for Type A component - note this is only true for piping with no structural attachments
+Figure 4.5 – Temperature Criteria for Piping Categorized as a Type A Component\n
+Nominal pipe size and design temperatrues to qualify for Type A component - note this is only true for piping with no structural attachments\n
 
 component = any of ["Cylindrical Vessel","Conical Shell Section","Spherical Vessel","Storage Sphere","Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head","Straight Section of Piping, Eblow or Bend - No Structural Attachments","Straight Section of Piping, Eblow or Bend - With Structural Attachments",
 "Cylindrical Atmosperic Storage Tank Shell Courses","Pressure Vessel Nozzles","Tank Nozzles","Piping Branch Connections","Reinforcement Zone of Conical Sections","Flanges","Cylinder to Flat Head Junction","Integral Tubesheet Connections",
-"Pressure Vessel Head to Shell Junction","Stiffening Rings Attached to Shell","Pressure Vessel Skirt and Lug Type Supports","Tank Shell Bottom Course","Tank Bottom Junction"]
+"Pressure Vessel Head to Shell Junction","Stiffening Rings Attached to Shell","Pressure Vessel Skirt and Lug Type Supports","Tank Shell Bottom Course","Tank Bottom Junction"]\n
 
-vessel_orientation = "horizontal" or "vertical" or piping " "
-material = "Carbon and Low Alloy Steels" or "High Alloy and Nonferrous Steels"
-D = Vessel Outside Diameter
-Lss = length between saddle supports for horizontal pressure vessels and heat exchangers.
-H = Vessel Height
-NPS = Nominal pipe size
-design_temperature = in F or C
-units = "lbs-in-psi" or "nmm-mm-mpa"
+vessel_orientation = "horizontal" or "vertical" or piping " "\n
+material = "Carbon and Low Alloy Steels" or "High Alloy and Nonferrous Steels"\n
+D = Vessel Outside Diameter\n
+Lss = length between saddle supports for horizontal pressure vessels and heat exchangers\n
+H = Vessel Height\n
+NPS = Nominal pipe size\n
+design_temperature = in F or C\n
+units = "lbs-in-psi" or "nmm-mm-mpa"\n
 
 """ ->
 function Part5ComponentTypeAssessmentApplicability(component::String; vessel_orientation::String, material::String, D::Float64,Lss::Float64,H::Float64, NPS::Float64, design_temperature::Float64, units::String)::Array{Int64}
@@ -499,9 +493,7 @@ end # let end
 end # function end
 #-- end component type categorization and level 1,2,3 assessment applicability
 
-x = Part5ComponentTypeAssessmentApplicability("Cylindrical Vessel", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=144.0,Lss=96.0,H=1440.0, NPS=0.0, design_temperature=0.0, units="lbs-in-psi")
-
-# Applicability of level 1 and 2 assessment
+# Applicability of level 1,2 and 3 assessment
 @doc """
     Part5Level1Level2Applicability(x::Array{Int64}; design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
 
@@ -553,5 +545,3 @@ function Part5Level1Level2Applicability(x::Array{Int64}, design::Int64, toughnes
     end # end level 3 applicability check
     return assessment_applicability = [level_1_satisfied,level_2_satisfied,level_3_satisfied]
 end
-
-Part5Level1Level2Applicability(x,design,toughness,cylic)
