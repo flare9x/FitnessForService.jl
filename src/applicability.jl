@@ -69,7 +69,7 @@ end
 
 # Limitations on component types and applied loads
 @doc """
-    Part5ComponentTypeAssessmentApplicability(component::String, vessel_orientation::String, material::String, D::Float64,Lss::Float64,H::Float64, NPS::Int64, design_temperature::Float64, units::String)::Array{Int64}
+    Part5ComponentType(component::String, vessel_orientation::String, material::String, D::Float64,Lss::Float64,H::Float64, NPS::Int64, design_temperature::Float64, units::String)::Array{Int64}
 
 5.2.5 Applicability of the Level 1 and Level 2 Assessment Procedures\n
 Level 1 Assessment – Type A Components - Subject to Internal Pressure\n
@@ -101,7 +101,7 @@ design_temperature = in F or C\n
 units = "lbs-in-psi" or "nmm-mm-mpa"\n
 
 """ ->
-function Part5ComponentTypeAssessmentApplicability(component::String; vessel_orientation::String, material::String, D::Float64,Lss::Float64,H::Float64, NPS::Float64, design_temperature::Float64, units::String)::Array{Int64}
+function Part5ComponentType(component::String; vessel_orientation::String, material::String, D::Float64,Lss::Float64,H::Float64, NPS::Float64, design_temperature::Float64, units::String)::Array{Int64}
     # input data
     # NPS groups
     print("Begin -- Component Type and Level 1,2,3 assessment applicability\n")
@@ -111,7 +111,7 @@ function Part5ComponentTypeAssessmentApplicability(component::String; vessel_ori
     cs_nps_pipe_range_group_4 = [18,20,22,24],
     alloy_nps_pipe_range_group_1 = [1/8,1/4,3/8,1/2,3/4,1,1.25,2,2.5,3,3.5,4],
     alloy_nps_pipe_range_group_2 = [5,6,8,10],
-    alloy_nps_pipe_range_group_3 = [12,14,16,18,20,22,24]
+    alloy_nps_pipe_range_group_3 = [12,14,16,18,20,22,24],
     # List of components
     components = ["Cylindrical Vessel","Conical Shell Section","Spherical Vessel","Storage Sphere","Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head","Straight Section of Piping, Eblow or Bend - No Structural Attachments","Straight Section of Piping, Eblow or Bend - With Structural Attachments",
     "Cylindrical Atmosperic Storage Tank Shell Courses","Pressure Vessel Nozzles","Tank Nozzles","Piping Branch Connections","Reinforcement Zone of Conical Sections","Flanges","Cylinder to Flat Head Junction","Integral Tubesheet Connections",
@@ -435,28 +435,6 @@ elseif (material == "High Alloy and Nonferrous Steels")
             level_3_satisfied = 1
             print("Piping Component is Type B, Class 1")
         end # end temperature crtieria
-    elseif any(NPS .== cs_nps_pipe_range_group_4)
-        temperature_limit = 0.0
-        if (units == "nmm-mm-mpa")
-            temperature_limit = round.((temperature_limit .- 32) * 5/9,digits=2)
-        elseif (units == "lbs-in-psi")
-            temperature_limit = temperature_limit
-        end
-        if (temperature_limit == 0.0 || temperature_limit == -17.78) # F and C
-            if (units == "lbs-in-psi")
-            print("High Alloy and Nonferrous Steels\n")
-            print("NPS Group = >10 to 24 inches\n")
-            print(design_temperature,"F falls between the limit range of ",temperature_limit,"F\n")
-        elseif (units == "nmm-mm-mpa")
-            print("High Alloy and Nonferrous Steels\n")
-            print("NPS Group = > 250 to 600mm\n")
-            print(design_temperature,"C falls between the limit range of ",temperature_limit,"C\n")
-        end
-            level_1_satisfied = 0
-            level_2_satisfied = 1
-            level_3_satisfied = 1
-            print("Piping Component is Type B, Class 1\n")
-        end # end temperature crtieria
     end
 end # end NPS piping Type A Component determination
 elseif (component == "Straight Section of Piping, Eblow or Bend - With Structural Attachments")
@@ -495,11 +473,11 @@ end # function end
 
 # Applicability of level 1,2 and 3 assessment
 @doc """
-    Part5Level1Level2Applicability(x::Array{Int64}; design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
+    Part5AsessmentApplicability(x::Array{Int64}; design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
 
 Insure API 579 5.2.5 are satisfied in order to conduct a level 1 and/or level 2 assessment
 """ ->
-function Part5Level1Level2Applicability(x::Array{Int64}, design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
+function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
     # level 1
     if (sum([x[1],design,toughness,cylic]) == 4)
         print("The criteria for level 1 assessment application has been satisfied\n")
