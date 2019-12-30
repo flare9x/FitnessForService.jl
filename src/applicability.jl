@@ -44,7 +44,7 @@ function MaterialToughness(x::String)::Int64
     elseif (x == "Uncertain") == 1
         material_toughness = 0
         print("Material Toughness Condition Not Satisfied\nConsult API 579 2016 Part 3\n")
-        print("If the component is subject to embrittlement during operation due to temperature and/or the process environment, a Part 3, Level 3 assessment should be performed.")
+        print("If the component is subject to embrittlement during operation due to temperature and/or the process environment, a Part 3, Level 3 assessment should be performed\n")
     end
     return material_toughness
 end
@@ -202,7 +202,7 @@ if (material == "Carbon and Low Alloy Steels")
             temperature_limit = temperature_limit
         end
         if (design_temperature >= temperature_limit[1] && design_temperature <= temperature_limit[2])
-            component_type = "Piping Component is a Type A component"
+            component_type = "Piping Component is a Type A component\n"
             if (units == "lbs-in-psi")
             print("Carbon and Low Alloy Steels\n")
             print("NPS Group = 0 to 4 inches\n")
@@ -217,7 +217,7 @@ if (material == "Carbon and Low Alloy Steels")
             level_2_satisfied = 1
             level_3_satisfied = 1
         else
-            component_type = "Piping Component is Type B, Class 1"
+            component_type = "Piping Component is Type B, Class 1\n"
             if (units == "lbs-in-psi")
             print("Carbon and Low Alloy Steels\n")
             print("NPS Group = 0 to 4 inches\n")
@@ -240,7 +240,7 @@ if (material == "Carbon and Low Alloy Steels")
             temperature_limit = temperature_limit
         end
         if (design_temperature >= temperature_limit[1] && design_temperature <= temperature_limit[2])
-            component_type = "Piping Component is a Type A component"
+            component_type = "Piping Component is a Type A component\n"
             if (units == "lbs-in-psi")
             print("Carbon and Low Alloy Steels\n")
             print("NPS Group = >4 to 8 inches\n")
@@ -255,7 +255,7 @@ if (material == "Carbon and Low Alloy Steels")
             level_2_satisfied = 1
             level_3_satisfied = 1
         else
-            component_type = "Piping Component is Type B, Class 1"
+            component_type = "Piping Component is Type B, Class 1\n"
             if (units == "lbs-in-psi")
             print("Carbon and Low Alloy Steels\n")
             print("NPS Group = >4 to 8 inches\n")
@@ -278,7 +278,7 @@ if (material == "Carbon and Low Alloy Steels")
             temperature_limit = temperature_limit
         end
         if (design_temperature >= temperature_limit[1] && design_temperature <= temperature_limit[2])
-            component_type = "Piping Component is a Type A component"
+            component_type = "Piping Component is a Type A component\n"
             if (units == "lbs-in-psi")
             print("Carbon and Low Alloy Steels\n")
             print("NPS Group = >8 to 16 inches\n")
@@ -293,7 +293,7 @@ if (material == "Carbon and Low Alloy Steels")
             level_2_satisfied = 1
             level_3_satisfied = 1
         else
-            component_type = "Piping Component is Type B, Class 1"
+            component_type = "Piping Component is Type B, Class 1\n"
             if (units == "lbs-in-psi")
             print("Carbon and Low Alloy Steels\n")
             print("NPS Group = >8 to 16 inches\n")
