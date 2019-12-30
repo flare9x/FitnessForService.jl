@@ -28,7 +28,7 @@ matrix:
 ## uncomment the following lines to override the default test script
 #  script:
 #   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#   - julia -e 'if VERSION >= v"0.7.0-" using Pkg; end; Pkg.clone(pwd()); Pkg.build("MarketCycles"); Pkg.test("MarketCycles"; coverage=true)';
+#   - julia -e 'if VERSION >= v"0.7.0-" using Pkg; end; Pkg.clone(pwd()); Pkg.build("FitnessForService"); Pkg.test("FitnessForService"; coverage=true)';
 after_success:
   # push coverage results to Coveralls
     - julia -e 'using Pkg; cd(Pkg.dir("FitnessForService")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

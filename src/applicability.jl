@@ -486,13 +486,16 @@ function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::
         if (x[1] == 0)
             print("(level 1) Component Type Not Satisfied\n")
             level_1_satisfied = 0
-        elseif (design == 0)
+        end
+        if (design == 0)
             print("(level 1) Design Code Not Satisfied\n")
             level_1_satisfied = 0
-        elseif (design == 0)
+        end
+        if (toughness == 0)
             print("(level 1) Material Toughness Not Satisfied\n")
             level_1_satisfied = 0
-        elseif (design == 0)
+        end
+        if (cylic == 0)
             print("(level 1) Cyclic Service Not Satisfied\n")
             level_1_satisfied = 0
         end
@@ -505,21 +508,24 @@ function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::
         if (x[2] == 0)
             print("(level 2) Component Type Not Satisfied\n")
             level_2_satisfied = 0
-        elseif (design == 0)
+        end
+        if (design == 0)
             print("(level 2) Design Code Not Satisfied\n")
             level_2_satisfied = 0
-        elseif (design == 0)
+        end
+        if (toughness == 0)
             print("(level 2) Material Toughness Not Satisfied\n")
             level_2_satisfied = 0
-        elseif (design == 0)
+        end
+        if (cylic == 0)
             print("(level 2) Cyclic Service Not Satisfied\n")
             level_2_satisfied = 0
-        end
+            end
     end # end level 2 applicability check
     # level 3
     if (x[3] == 1)
         print("The criteria for level 3 assessment application has been satisfied\n")
         level_3_satisfied = 1
     end # end level 3 applicability check
-    return assessment_applicability = [level_1_satisfied,level_2_satisfied,level_3_satisfied]
+    return assessment_applicability = [level_1_satisfied, level_2_satisfied, level_3_satisfied]
 end

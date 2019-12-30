@@ -4,7 +4,7 @@
 
     Returns tmm - minimum measured thickness determined at the time of the inspection
 """
-function CTP_Grid(CTPGrid::Array{Float64,2})
+function CTP_Grid(CTPGrid::Array{Float64,2})  # may add plotting feature later - spacings paramter for here
     # Labels for plotting
     #=circumferential_plane_index = Int64.(collect(1:1:s2)) # collect auto rounds - no need to write code to correct
     circ_label = fill("C",length(circumferential_plane_index))
