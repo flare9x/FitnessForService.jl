@@ -9,19 +9,40 @@
 """
 design = DesignCodeCriteria("ASME B31.3 Piping Code")
 toughness = MaterialToughness("Certain")
-cylic = CyclicService(100, "Meets Part 14")
+cylic = CyclicService(170, "Meets Part 14")
 x = Part5ComponentType("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=144.0,Lss=96.0,H=1440.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
 part5_applicability = Part5AsessmentApplicability(x,design,toughness,cylic)
 
 # Level 1 fit for service
 # Data collection and requirments
+units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
+# Input Data
+equipment_group = "piping" # "vessel", "tank"
+flaw_location = "External" # "External","Internal"
+Do = 3.5 # Outside Diameter
+tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+D = Do - 2*(tnom) # inside diameter of the vessel.
+FCAml = .05 # Future Corrosion Allowance applied to the region of metal loss.
+FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
 
-# CTP Grid
+# Adjust the FCA by internal and external as below
+FCA_string = "Internal"  # "External","Internal"
+if (FCA_string == "Internal")
+Dml = D + (2*FCAml) # inside diameter of the shell corrected for ml FCA , as applicable.
+elseif (FCA_string == "External")
+    Dml = D # inside diameter of the shell corrected for ml FCA , as applicable.
+end
+
+# STEP 1 – Determine the CTP (see paragraph 5.3.3.2).
 spacings = 0.5
+# Flaw dimensions
 s = 5.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
 c = 1.5 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
 s2 = (s * 2) / spacings # maximum inspection boundary - longitudinal direction
 c2 = (c * 2) / spacings # minimum inspection boundary - circumferential  direction
+# Data grid
 M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, 0.220, 0.280, 0.250, 0.240, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 M3 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.215, 0.255, 0.215, 0.145, 0.275, 0.170, 0.240, 0.250, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
@@ -30,9 +51,16 @@ M5 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.30
 M6 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+# Flaw-To-Major Structural Discontinuity Spacing
+L1msd = [12.0]
+L2msd = [12.0]
+L3msd = [12.0]
+L4msd = [12.0]
+L5msd = [12.0]
+Lmsd = minimum([L1msd,L2msd,L3msd,L4msd,L5msd])
 
 @doc """
-    CTP_Grid(CTP_grid::Matrix{T})where {T<:Real}
+    CTP_Grid(CTPGrid::Array{Float64,2})
 """
 function CTP_Grid(CTPGrid::Array{Float64,2})
 # Labels for plotting
@@ -64,27 +92,110 @@ minL_CTP = minimum(Longitudinal_CTP)
 tmm = minimum([minC_CTP,minL_CTP]) # minimum measured thickness determined at the time of the inspection.
 return tmm
 end
+# STEP 2 – Determine the wall thickness to be used in the assessment using Equation (5.3) or Equation (5.4), as applicable.
+tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.3)
+tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
+tc = .3
+# STEP 3 – Determine the minimum measured thickness in the LTA, tmm , and the dimensions, s and c (see paragraph 5.3.3.2.b) for the CTP.
+# s and c cetermined above
+tmm = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
 
+# STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
+Rt = (tmm-FCA) / tc # remaining thickness ratio. # (5.5)
+lambda = (1.285*s)/(sqrt(D*tc))
 
-tmm = CTP_Grid(CTPGrid)
+# STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
+@doc """
+FlawSizeLimitCriteria(equipment_group::String,units::String)::Array{Int64}
 
-flaw_location = "External" # "External","Internal"
-Do = 3.5 # Outside Diameter
-tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-D = Do - 2*(tnom) # inside diameter of the vessel.
-FCAml = .05 # Future Corrosion Allowance applied to the region of metal loss.
-FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
-
-FCA_string = "Internal"  # "External","Internal"
-if (FCA_string == "Internal")
-Dml = D + (2*FCAml) # inside diameter of the shell corrected for ml FCA , as applicable.
-elseif (FCA_string == "External")
-    Dml = D # inside diameter of the shell corrected for ml FCA , as applicable.
+Determine if the flaw is acceptable per level 1 criteria
+    """ ->
+function FlawSizeLimitCriteria(equipment_group::String,units::String)::Array{Int64}
+    let test_1 = 0, test_2 = 0, test_3 =.0, test_4 = 0
+        @assert any(equipment_group .== ["piping","vessel","tank"]) "Invalid input - select either: 'piping' or 'vessel' or 'tank'"
+if (equipment_group == "piping" || equipment_group == "vessel" || equipment_group == "tank")
+    if (Rt >= 0.20)
+        print("eq 5.7 is Satisfied\n")
+        test_1 = 1
+    end
+    if (Lmsd[1] >= 1.8*(sqrt(D*tc)))
+        print("eq 5.10 is Satisfied\n")
+        test_4 = 1
+    end
+end
+if (equipment_group == "vessel" || equipment_group == "tank")
+    if (units == "lbs-in-psi")
+        if (tmm - FCAml >= 0.10)
+            print("eq 5.8 is Satisfied\n")
+            test_2 = 1
+        end
+    elseif (units == "nmm-mm-mpa")
+        if (tmm - FCAml >=2.5)
+            print("eq 5.8 is Satisfied\n")
+            test_2 = 1
+        end
+    end
+end
+if (equipment_group == "piping")
+    if (units == "lbs-in-psi")
+        if (tmm - FCAml >=0.05)
+            print("eq 5.9 is Satisfied\n")
+            test_3 = 1
+        end
+    elseif (units == "nmm-mm-mpa")
+        if (tmm - FCAml >=1.3)
+            print("eq 5.9 is Satisfied\n")
+            test_3 = 1
+        end
+    end
+end
+return level_1_satisfied = [test_1,test_2,test_3,test_4]
+end # let end
 end
 
-tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable.
-Rt = (tmm-FCA) / tc # remaining thickness ratio.
+x = FlawSizeLimitCriteria("vessel","lbs-in-psi")
+
+@doc """
+    FlawSizeLevel1Acceptance(x::Array{Int64})::Array{Int64}
+
+Determine if the limiting flaw size criteria has met the level 1 requirments
+""" ->
+function FlawSizeLevel1Acceptance(x::Array{Int64},equipment_group::String)::Int64
+    @assert any(equipment_group .== ["piping","vessel","tank"]) "Invalid input - select either: 'piping' or 'vessel' or 'tank'"
+    let level_1_satisfied = 0
+    # level 1
+    if (sum([x[1],x[2],x[3],x[4]]) == 3)
+        print("The criteria for level 1 assessment has been satisfied - proceed to STEP 6\n")
+        level_1_satisfied = 1
+    end
+    if (sum([x[1],x[2],x[3],x[4]]) != 3)
+        print("The criteria for level 1 assessment has not been satisfied - level 1 assessment failed\n")
+        level_1_satisfied = 1
+        if (x[1] == 0)
+            print("eq 5.7 has not been Satisfied\n")
+        end
+        if (x[2] == 0 && (equipment_group == "vessel" || equipment_group == "tank"))
+            print("(for vessels & tanks) eq 5.8 has not been Satisfied\n")
+        end
+        if (x[3] == 0 && equipment_group == "piping")
+            print("(for piping)  eq 5.9 has not been Satisfied\n")
+        end
+        if (x[4] == 0)
+            print("eq 5.10 has not been Satisfied\n")
+        end
+    end # not equal to end
+    return level_1_satisfied
+end # let end
+end # function end
+
+
+
+out = FlawSizeLevel1Acceptance(x,"vessel")
+
+# STEP 6 – If the region of metal loss is categorized as an LTA (i.e. the LTA is not a groove), then proceed to STEP 7. If the region of metal loss is categorized as a groove and Equation (5.11) is satisfied,
+# then proceed to STEP 7. Otherwise, the Level 1 assessment is not satisfied and proceed to paragraph 5.4.2.3.
+
+
 RSFa = .9 # allowable remaining strength factor (see Part 2).
 if (Rt < RSFa)
 Q = round(1.123*((((1-Rt)/(1-Rt/RSFa))^2-1)^.5),digits=2) # factor used to determine the length for thickness averaging based on an allowable Remaining Strength Factor (see Part 2) and the remaining thickness ratio, Rt (see Table 4.8).
@@ -100,42 +211,6 @@ if (flaw_location == "Internal")
 elseif (flaw_location == "External")
     print("Can Determine alterante spacing providing component can be adequately characterized - Using Spacing = ", spacings)
 end
-
-@doc """
-    CTP_Grid
-"""
-
-
-
-# Application Construction Codes
-@doc """
-    DesignCodeCriteria(x::String)::Int64
-
-Check code meets API 579 construction codes
-
-Choose from: ASME B&PV Code, Section VIII, Division 1,ASME B&PV Code, Section VIII, Division 2,ASME B&PV Code, Section I,ASME B31.1 Piping Code,ASME B31.3 Piping Code,ASME B31.4 Piping Code,
-"ASME B31.8 Piping Code,ASME B31.12 Piping Code,API Std 650,API Std 620,API Std 530,Other Recognized Codes and Standards
-""" ->
-function DesignCodeCriteria(x::String)::Int64
-    # reference data
-    let codes = ["ASME B&PV Code, Section VIII, Division 1","ASME B&PV Code, Section VIII, Division 2","ASME B&PV Code, Section I","ASME B31.1 Piping Code","ASME B31.3 Piping Code","ASME B31.4 Piping Code",
-    "ASME B31.8 Piping Code","ASME B31.12 Piping Code","API Std 650","API Std 620","API Std 530","Other Recognized Codes and Standards"]
-    if any(x .== codes[1:length(codes)-1]) == 1
-        print("Condition Satisfied - Code = ",x,"\n")
-        design_code_criteria = 1
-    elseif any(x .== codes) == 0
-        print("Condition Not Satisfied\n")
-        print("Check spelling else code not applicable, see API 579 2016 1.2 Scope sections 1.2.2 & 1.2.3\n")
-        design_code_criteria = 0
-    elseif (x == "Other Recognized Codes and Standards")
-        print("For Other Recognized Codes and Standards - See conditions stated in API 579 2016 1.2 Scope sections 1.2.2 & 1.2.3.\n")
-        design_code_criteria = 0
-        end
-    return design_code_criteria
-end # let end
-end
-
-
 
 
 # Piping
