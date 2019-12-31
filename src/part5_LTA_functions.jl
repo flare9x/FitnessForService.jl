@@ -161,7 +161,7 @@ Rt = (tmm-FCA) / tc # remaining thickness ratio. # (5.5)
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
-x = Part5LTAFlawSizeLimitCriteria(equipment_group,units,Rt,D,tc,tm,FCAml)
+x = Part5LTAFlawSizeLimitCriteria(equipment_group,units,Rt,D,tc,tmm,FCAml)
 flaw_size_accept = Part5LTAFlawSizeLevel1Acceptance(x,equipment_group)
 
 # STEP 6 – If the region of metal loss is categorized as an LTA (i.e. the LTA is not a groove), then proceed to STEP 7. If the region of metal loss is categorized as a groove and Equation (5.11) is satisfied,

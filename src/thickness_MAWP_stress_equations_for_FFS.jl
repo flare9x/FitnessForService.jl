@@ -1,10 +1,10 @@
 # ANNEX 2C – THICKNESS, MAWP AND STRESS EQUATIONS FOR A FFS ASSESSMENT
 
 # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
-+++ condiser weld joint efficient for damage over welds +++ to add
+#+++ condiser weld joint efficient for damage over welds +++ to add
 
 # 2C.2.6 Treatment of Damage in Formed Heads
-+++ If damage (e.g. corrosion/erosion, pitting, etc.) occurs in the center section of an elliptical or torispherical head +++ to add
+#+++ If damage (e.g. corrosion/erosion, pitting, etc.) occurs in the center section of an elliptical or torispherical head +++ to add
 
 #2C.3 Pressure Vessels and Boiler Components – Internal Pressure
 # 2C.3.3 Cylindrical Shells
