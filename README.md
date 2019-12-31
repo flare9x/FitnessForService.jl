@@ -169,6 +169,6 @@ The assessment is complete for all component types
 
 Each fit for service assessment is tested to a correct known output and assessment functions are tested to established tables and plots in the API 579 June 2016 code:
 
-Test Summary:          | Pass  Total
-applicability.jl       |  100    100
-part5_LTA_functions.jl |   11     11
+Test Summary:          | Pass  Total\n
+applicability.jl       |  100    100\n
+part5_LTA_functions.jl |   11     11\n
