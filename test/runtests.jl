@@ -1,3 +1,5 @@
+using FitnessForService
+
 @static if VERSION < v"0.7.0-DEV.2005"
     using Base.Test
 else
@@ -153,7 +155,6 @@ end
         case_80 = Part5ComponentType("Cylinder to Flat Head Junction", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
         case_81 = Part5ComponentType("Integral Tubesheet Connections", vessel_orientation="vertical", material="Carbon and Low Alloy Steels", D=3657.6,Lss=2438.4,H=36576.0, NPS=0.0, design_temperature=0.0, units="nmm-mm-mpa")
 
-
         @test sum(case_1) == 3
         @test sum(case_2) == 3
         @test sum(case_3) == 3
@@ -237,6 +238,7 @@ end
         @test sum(case_81) == 1 # type b class 2
     end
 end
+
 @testset "part5_LTA_functions.jl" begin
     @testset "Non Groove Part 5 LTA Level 1 Assessment" begin
         part_5_lta_level_1_known_correct_output = [.3,.1,0.333,8.266,3680.982,7947.020,3680.982,4.617,0.390,1593.429,1480.0]
