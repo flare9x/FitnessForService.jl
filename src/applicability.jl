@@ -1,8 +1,5 @@
 # Fitness for service applicability
 
-x = "AISI Type 347H"
-design_temperature = 1000.0
-
 # Creep Range Temperatures
 @doc """
     CreepRangeTemperature(x::String; design_temperature::Float64, units::String)::Int64
@@ -26,17 +23,17 @@ function CreepRangeTemperature(x::String; design_temperature::Float64, units::St
     @assert any(x .== material) "Invalid material input - please select from the materials listed in @doc CreepRangeTemperature"
     material_index_position = findfirst(isequal(x), material)
     if (units == "lbs-in-psi" && design_temperature <= temperature_limit_F[material_index_position])
-        print("Design Temperature ",design_temperature," F is below or equal to the creep temperature limit ",temperature_limit_F[material_index_position],"F - Criteria satisfied\n")
+        print("Design Temperature ",design_temperature," F is below or equal to the creep temperature limit ",temperature_limit_F[material_index_position],"F for material ",x," - Criteria satisfied\n")
         creep_temp_criteria = 1
     elseif (units == "lbs-in-psi" && design_temperature > temperature_limit_F[material_index_position])
-        print("Design Temperature ",design_temperature," F is above the creep temperature limit ",temperature_limit_F[material_index_position],"F - Criteria not satisfied\n")
+        print("Design Temperature ",design_temperature," F is above the creep temperature limit ",temperature_limit_F[material_index_position],"F for material ",x," - Criteria not satisfied\n")
         creep_temp_criteria = 0
     end
     if (units == "nmm-mm-mpa" && design_temperature <= temperature_limit_C[material_index_position])
-        print("Design Temperature ",design_temperature," C iss below or equal to the creep temperature limit ",temperature_limit_F[material_index_position],"C - Criteria satisfied\n")
+        print("Design Temperature ",design_temperature," C is below or equal to the creep temperature limit ",temperature_limit_C[material_index_position],"C for material ",x," - Criteria satisfied\n")
         creep_temp_criteria = 1
     elseif (units == "nmm-mm-mpa" && design_temperature > temperature_limit_C[material_index_position])
-        print("Design Temperature ",design_temperature," C is above the creep temperature limit ",temperature_limit_F[material_index_position],"C - Criteria not satisfied\n")
+        print("Design Temperature ",design_temperature," C is above the creep temperature limit ",temperature_limit_C[material_index_position],"C for material ",x," - Criteria not satisfied\n")
         creep_temp_criteria = 0
     end
     return creep_temp_criteria

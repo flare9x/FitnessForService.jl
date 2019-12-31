@@ -56,7 +56,7 @@ Type C components are limited to Level 3 assessments.
 An example output of the Type and level 1,2,3 assessment applicability for carbon steel Straight Section of Piping, Elbow or Bend - No Structural Attachments, NPS 3 with design temperature 100F:
 
 ```julia
-Design Temperature 100.0 F is below or equal to the creep temperature limit 650F - Criteria satisfied
+Design Temperature 100.0 F is below or equal to the creep temperature limit 650F for material Carbon Steel (UTS ≤ 414MPa (60 ksi)) - Criteria satisfied
 Condition Satisfied - Code = ASME B31.3 Piping Code
 Material Toughness Condition Satisfied
 Cyclic Service Condition Satisfied
@@ -72,7 +72,7 @@ The criteria for level 3 assessment application has been satisfied
 An example output of the Type and level 1,2,3 assessment applicability for component type: Flanges:
 
  ```julia
-Design Temperature 100.0 F is below or equal to the creep temperature limit 650F - Criteria satisfied
+Design Temperature 100.0 F is below or equal to the creep temperature limit 650F for material Carbon Steel (UTS ≤ 414MPa (60 ksi)) - Criteria satisfied
 Condition Satisfied - Code = ASME B&PV Code, Section VIII, Division 1
 Material Toughness Condition Satisfied
 Cyclic Service Condition Satisfied

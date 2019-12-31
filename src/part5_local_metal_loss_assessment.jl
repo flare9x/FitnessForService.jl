@@ -7,7 +7,7 @@
 # @doc CyclicService
 # @doc Part5ComponentType
 print("Begin -- Assessment Applicability and Component Type Checks\n")
-creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; design_temperature=100.0, units="lbs-in-psi")
+creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; design_temperature=100.0, units="nmm-mm-mpa")
 design = DesignCodeCriteria("ASME B&PV Code, Section VIII, Division 1")
 toughness = MaterialToughness("Certain")
 cyclic = CyclicService(100, "Meets Part 14")
