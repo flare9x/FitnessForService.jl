@@ -29,11 +29,12 @@ Applicability of the Level 3 Assessment Procedures
 The functions that check the applicability of the assessment procedure:
 
 ```julia
+creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; design_temperature=100.0, units="lbs-in-psi")
 design = DesignCodeCriteria("ASME B31.3 Piping Code")
 toughness = MaterialToughness("Certain")
 cyclic = CyclicService(100, "Meets Part 14")
 x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
-part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic)
+part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic,creep_range)
  ```
 
 Each component falls into a different Type and class category. Type A components have a design equation that specifically relates pressure (or liquid fill height for tanks) and supplemental loads, as applicable, to a required wall thickness, and the supplemental loads in combination with pressure do not govern the required wall thickness, i.e. the required thickness is based on pressure only.
@@ -55,6 +56,7 @@ Type C components are limited to Level 3 assessments.
 An example output of the Type and level 1,2,3 assessment applicability for carbon steel Straight Section of Piping, Elbow or Bend - No Structural Attachments, NPS 3 with design temperature 100F:
 
 ```julia
+Design Temperature 100.0 F is below or equal to the creep temperature limit 650F - Criteria satisfied
 Condition Satisfied - Code = ASME B31.3 Piping Code
 Material Toughness Condition Satisfied
 Cyclic Service Condition Satisfied
@@ -70,7 +72,8 @@ The criteria for level 3 assessment application has been satisfied
 An example output of the Type and level 1,2,3 assessment applicability for component type: Flanges:
 
  ```julia
- Condition Satisfied - Code = ASME B&PV Code, Section VIII, Division 1
+Design Temperature 100.0 F is below or equal to the creep temperature limit 650F - Criteria satisfied
+Condition Satisfied - Code = ASME B&PV Code, Section VIII, Division 1
 Material Toughness Condition Satisfied
 Cyclic Service Condition Satisfied
 Begin -- Component Type and Level 1,2,3 assessment applicability

@@ -1,5 +1,51 @@
 # Fitness for service applicability
 
+x = "AISI Type 347H"
+design_temperature = 1000.0
+
+# Creep Range Temperatures
+@doc """
+    CreepRangeTemperature(x::String; design_temperature::Float64, units::String)::Int64
+
+Check design temperature is below the creep limit temperatures
+
+design_temperature = in F or C\n
+units = "lbs-in-psi" or "nmm-mm-mpa"\n
+
+Choose from material list : "Carbon Steel (UTS ≤ 414MPa (60 ksi))","Carbon Steel (UTS > 414MPa (60 ksi))","Carbon Steel – Graphitized","C-1/2Mo","1-1/4Cr-1/2Mo – Normalized & Tempered","1-1/4Cr-1/2Mo – Annealed",
+"2-1/4Cr-1Mo – Normalized & Tempered","2-1/4Cr-1Mo – Annealed","2-1/4Cr-1Mo – Quenched & Tempered","2-1/4Cr-1Mo – V","3Cr-1Mo-V","5Cr-1/2Mo","7Cr-1/2Mo","9Cr-1Mo","9Cr-1Mo – V","12 Cr","AISI Type 304 & 304H",
+"AISI Type 316 & 316H","AISI Type 321","AISI Type 321H","AISI Type 347","AISI Type 347H","Alloy 800","Alloy 800H","Alloy 800HT","HK-40"
+""" ->
+function CreepRangeTemperature(x::String; design_temperature::Float64, units::String)::Int64
+    # reference data
+    let material = ["Carbon Steel (UTS ≤ 414MPa (60 ksi))","Carbon Steel (UTS > 414MPa (60 ksi))","Carbon Steel – Graphitized","C-1/2Mo","1-1/4Cr-1/2Mo – Normalized & Tempered","1-1/4Cr-1/2Mo – Annealed",
+    "2-1/4Cr-1Mo – Normalized & Tempered","2-1/4Cr-1Mo – Annealed","2-1/4Cr-1Mo – Quenched & Tempered","2-1/4Cr-1Mo – V","3Cr-1Mo-V","5Cr-1/2Mo","7Cr-1/2Mo","9Cr-1Mo","9Cr-1Mo – V","12 Cr","AISI Type 304 & 304H",
+    "AISI Type 316 & 316H","AISI Type 321","AISI Type 321H","AISI Type 347","AISI Type 347H","Alloy 800","Alloy 800H","Alloy 800HT","HK-40"],
+    temperature_limit_F = [650,700,700,750,800,800,800,800,800,825,825,800,800,800,850,900,950,1000,1000,1000,1000,1000,1050,1050,1050,1200],
+    temperature_limit_C = [343,371,371,399,427,427,427,427,427,411,411,427,427,427,454,482,510,538,538,538,538,538,565,565,565,649]
+    @assert any(x .== material) "Invalid material input - please select from the materials listed in @doc CreepRangeTemperature"
+    material_index_position = findfirst(isequal(x), material)
+    if (units == "lbs-in-psi" && design_temperature <= temperature_limit_F[material_index_position])
+        print("Design Temperature ",design_temperature," F is below or equal to the creep temperature limit ",temperature_limit_F[material_index_position],"F - Criteria satisfied\n")
+        creep_temp_criteria = 1
+    elseif (units == "lbs-in-psi" && design_temperature > temperature_limit_F[material_index_position])
+        print("Design Temperature ",design_temperature," F is above the creep temperature limit ",temperature_limit_F[material_index_position],"F - Criteria not satisfied\n")
+        creep_temp_criteria = 0
+    end
+    if (units == "nmm-mm-mpa" && design_temperature <= temperature_limit_C[material_index_position])
+        print("Design Temperature ",design_temperature," C iss below or equal to the creep temperature limit ",temperature_limit_F[material_index_position],"C - Criteria satisfied\n")
+        creep_temp_criteria = 1
+    elseif (units == "nmm-mm-mpa" && design_temperature > temperature_limit_C[material_index_position])
+        print("Design Temperature ",design_temperature," C is above the creep temperature limit ",temperature_limit_F[material_index_position],"C - Criteria not satisfied\n")
+        creep_temp_criteria = 0
+    end
+    return creep_temp_criteria
+end # let end
+end
+
+a = [ "a", "b", "c", "d" ]
+findfirst(isequal("c"), a)
+
 # Application Construction Codes
 @doc """
     DesignCodeCriteria(x::String)::Int64
@@ -49,7 +95,7 @@ function MaterialToughness(x::String)::Int64
     return material_toughness
 end
 
-# Cylic Service
+# cyclic Service
 @doc """
     CyclicService(cycles::Int64)::Int64
 
@@ -473,16 +519,16 @@ end # function end
 
 # Applicability of level 1,2 and 3 assessment
 @doc """
-    Part5AsessmentApplicability(x::Array{Int64}; design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
+    Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::Int64, cyclic::Int64, creep_range::Int64)::Array{Int64}
 
 Insure API 579 5.2.5 are satisfied in order to conduct a level 1 and/or level 2 assessment
 """ ->
-function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::Int64, cylic::Int64)::Array{Int64}
+function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::Int64, cyclic::Int64, creep_range::Int64)::Array{Int64}
     # level 1
-    if (sum([x[1],design,toughness,cylic]) == 4)
+    if (sum([x[1],design,toughness,cyclic,creep_range]) == 5)
         print("The criteria for level 1 assessment application has been satisfied\n")
         level_1_satisfied = 1
-    elseif (sum([x[1],design,toughness,cylic]) != 4)
+    elseif (sum([x[1],design,toughness,cyclic,creep_range]) != 5)
         if (x[1] == 0)
             print("(level 1) Component Type Not Satisfied\n")
             level_1_satisfied = 0
@@ -495,16 +541,20 @@ function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::
             print("(level 1) Material Toughness Not Satisfied\n")
             level_1_satisfied = 0
         end
-        if (cylic == 0)
+        if (cyclic == 0)
             print("(level 1) Cyclic Service Not Satisfied\n")
+            level_1_satisfied = 0
+        end
+        if (creep_range == 0)
+            print("(level 1) Creep Range Temperature Not Satisfied\n")
             level_1_satisfied = 0
         end
     end # end level 1 applicability check
     # level 2
-    if (sum([x[2],design,toughness,cylic]) == 4)
+    if (sum([x[2],design,toughness,cyclic,creep_range]) == 5)
         print("The criteria for level 2 assessment application has been satisfied\n")
         level_2_satisfied = 1
-    elseif (sum([x[2],design,toughness,cylic]) != 4)
+    elseif (sum([x[2],design,toughness,cyclic,creep_range]) != 5)
         if (x[2] == 0)
             print("(level 2) Component Type Not Satisfied\n")
             level_2_satisfied = 0
@@ -517,15 +567,22 @@ function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::
             print("(level 2) Material Toughness Not Satisfied\n")
             level_2_satisfied = 0
         end
-        if (cylic == 0)
+        if (cyclic == 0)
             print("(level 2) Cyclic Service Not Satisfied\n")
             level_2_satisfied = 0
-            end
+        end
+        if (creep_range == 0)
+            print("(level 2) Creep Range Temperature Not Satisfied\n")
+            level_2_satisfied = 0
+        end
     end # end level 2 applicability check
     # level 3
-    if (x[3] == 1)
+    if (x[3] == 1 && creep_range == 1)
         print("The criteria for level 3 assessment application has been satisfied\n")
         level_3_satisfied = 1
+    elseif (x[3] == 1 && creep_range == 0)
+        print("(level 3) Creep Range Temperature Not Satisfied\n")
+        level_3_satisfied = 0
     end # end level 3 applicability check
     return assessment_applicability = [level_1_satisfied, level_2_satisfied, level_3_satisfied]
 end
