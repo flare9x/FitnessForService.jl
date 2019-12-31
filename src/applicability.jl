@@ -87,7 +87,7 @@ D = Outside Diameter :: If the horizontal vessel or heat exchanger contains coni
 Figure 4.5 – Temperature Criteria for Piping Categorized as a Type A Component\n
 Nominal pipe size and design temperatrues to qualify for Type A component - note this is only true for piping with no structural attachments\n
 
-component = any of ["Cylindrical Vessel","Conical Shell Section","Spherical Vessel","Storage Sphere","Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head","Straight Section of Piping, Eblow or Bend - No Structural Attachments","Straight Section of Piping, Eblow or Bend - With Structural Attachments",
+component = any of ["Cylindrical Vessel","Conical Shell Section","Spherical Vessel","Storage Sphere","Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head","Straight Section of Piping, Elbow or Bend - No Structural Attachments","Straight Section of Piping, Elbow or Bend - With Structural Attachments",
 "Cylindrical Atmosperic Storage Tank Shell Courses","Pressure Vessel Nozzles","Tank Nozzles","Piping Branch Connections","Reinforcement Zone of Conical Sections","Flanges","Cylinder to Flat Head Junction","Integral Tubesheet Connections",
 "Pressure Vessel Head to Shell Junction","Stiffening Rings Attached to Shell","Pressure Vessel Skirt and Lug Type Supports","Tank Shell Bottom Course","Tank Bottom Junction"]\n
 
@@ -113,7 +113,7 @@ function Part5ComponentType(component::String; vessel_orientation::String, mater
     alloy_nps_pipe_range_group_2 = [5,6,8,10],
     alloy_nps_pipe_range_group_3 = [12,14,16,18,20,22,24],
     # List of components
-    components = ["Cylindrical Vessel","Conical Shell Section","Spherical Vessel","Storage Sphere","Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head","Straight Section of Piping, Eblow or Bend - No Structural Attachments","Straight Section of Piping, Eblow or Bend - With Structural Attachments",
+    components = ["Cylindrical Vessel","Conical Shell Section","Spherical Vessel","Storage Sphere","Spherical Formed Head","Elliptical Formed Head","Torispherical Formed Head","Straight Section of Piping, Elbow or Bend - No Structural Attachments","Straight Section of Piping, Elbow or Bend - With Structural Attachments",
     "Cylindrical Atmosperic Storage Tank Shell Courses","Pressure Vessel Nozzles","Tank Nozzles","Piping Branch Connections","Reinforcement Zone of Conical Sections","Flanges","Cylinder to Flat Head Junction","Integral Tubesheet Connections",
     "Pressure Vessel Head to Shell Junction","Stiffening Rings Attached to Shell","Pressure Vessel Skirt and Lug Type Supports","Tank Shell Bottom Course","Tank Bottom Junction"]
     #-- begin component type categorization and level 1,2,3 assessment applicability
@@ -186,7 +186,7 @@ if (component == "Cylindrical Atmosperic Storage Tank Shell Courses")
 end # end cylindrical atmospheric storage tank shell courses. Type A component type determination
 #--- begin piping determination for Type A
 # NPS piping groups
-if (component == "Straight Section of Piping, Eblow or Bend - No Structural Attachments")
+if (component == "Straight Section of Piping, Elbow or Bend - No Structural Attachments")
 if (material == "Carbon and Low Alloy Steels")
     if (units == "nmm-mm-mpa")
         cs_nps_pipe_range_group_1 = round.(cs_nps_pipe_range_group_1 .* 25.4,digits=2)
@@ -437,7 +437,7 @@ elseif (material == "High Alloy and Nonferrous Steels")
         end # end temperature crtieria
     end
 end # end NPS piping Type A Component determination
-elseif (component == "Straight Section of Piping, Eblow or Bend - With Structural Attachments")
+elseif (component == "Straight Section of Piping, Elbow or Bend - With Structural Attachments")
     print("Piping Component qualifies as a Type B, Class 1 component\n")
     level_1_satisfied = 0
     level_2_satisfied = 1
