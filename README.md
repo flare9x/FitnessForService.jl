@@ -38,13 +38,19 @@ part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic)
 
 Each component falls into a different Type and class category. Type A components have a design equation that specifically relates pressure (or liquid fill height for tanks) and supplemental loads, as applicable, to a required wall thickness, and the supplemental loads in combination with pressure do not govern the required wall thickness, i.e. the required thickness is based on pressure only.
 
+Type A components are limited to Level 1, 2 and 3 assessments.
+
 Type B, Class 1 components have the same geometry and loading conditions as described in a) above but are not classified as Type A components because supplemental loads in combination with pressure may govern the required wall thickness.
+Type B, Class 1 components are limited to Level 2 and 3 assessments.
 
 Type B, Class 2 components do not have a design equation that specifically relates pressure (or liquid fill height for tanks) and/or other loads, as applicable, to a required wall thickness. These components have a code design procedure to determine an acceptable configuration. Type B, Class 2 components typically exist at a major structural discontinuity and involve the satisfaction of a local reinforcement requirement (e.g. nozzle reinforcement area), or necessitate the computation of a stress level based upon a given load condition, geometry, and thickness configuration (e.g. flange design). These rules typically result in one component with a thickness that is dependent upon that of another component. Design rules of this type have thickness interdependency, and the definition of a minimum thickness for a component is ambiguous.
 
-Type C Components – A component that does not have a design equation which specifically relates pressure (or liquid fill height for tanks) and/or other loads, as applicable, to a required wall thickness. In addition, these components do not have a code design procedure to determine local stresses.
+Type B, Class 2 components are limited to Level 3 assessments.
 
-An example output of the Type and level 1,2,3 assessment applicability:
+Type C Components – A component that does not have a design equation which specifically relates pressure (or liquid fill height for tanks) and/or other loads, as applicable, to a required wall thickness. In addition, these components do not have a code design procedure to determine local stresses.
+Type C components are limited to Level 3 assessments.
+
+An example output of the Type and level 1,2,3 assessment applicability for carbon steel Straight Section of Piping, Elbow or Bend - No Structural Attachments, NPS 3 with design temperature 100F:
 
 ```julia
 Condition Satisfied - Code = ASME B31.3 Piping Code
@@ -59,6 +65,7 @@ The criteria for level 1 assessment application has been satisfied
 The criteria for level 2 assessment application has been satisfied
 The criteria for level 3 assessment application has been satisfied
  ```
+An example output of the Type and level 1,2,3 assessment applicability for component type: Flanges:
 
  ```julia
  Condition Satisfied - Code = ASME B&PV Code, Section VIII, Division 1
@@ -71,7 +78,7 @@ Flanges qualifies as a Type B, Class 2 Component
 The criteria for level 3 assessment application has been satisfied
   ```
 
- Once the limitation and correct assessment applicability have been determined. Running the script part5_local_metal_loss_assessment.jl will apply the correct assessment to the applicable component type.
+Once the limitation and correct assessment applicability have been determined. Running the script part5_local_metal_loss_assessment.jl will apply the correct assessment to the applicable component type.
 
 Each assessment is wrapped in a function. The Part 5 level 1 assessment function may be explored with @doc Part5LTALevel1.
 The function consists of the relevant input variables that are needed to perform the assessment:
@@ -137,7 +144,7 @@ The function consists of the relevant input variables that are needed to perform
      El = 1.0 longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
  ```
 
-An example output of the assessment:
+The Part 5 Level 1 assessment output example:
 
    ```julia
 Satisfied - Flaw is located far enough from structural discontinuity
