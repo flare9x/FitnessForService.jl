@@ -40,7 +40,7 @@ Each component falls into a different Type and class category. Type A components
 
 Type A components are limited to Level 1, 2 and 3 assessments.
 
-Type B, Class 1 components have the same geometry and loading conditions as described in a) above but are not classified as Type A components because supplemental loads in combination with pressure may govern the required wall thickness.
+Type B, Class 1 components have the same geometry and loading conditions as described in Type A above but are not classified as Type A components because supplemental loads in combination with pressure may govern the required wall thickness.
 
 Type B, Class 1 components are limited to Level 2 and 3 assessments.
 
