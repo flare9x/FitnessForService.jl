@@ -41,6 +41,7 @@ Each component falls into a different Type and class category. Type A components
 Type A components are limited to Level 1, 2 and 3 assessments.
 
 Type B, Class 1 components have the same geometry and loading conditions as described in a) above but are not classified as Type A components because supplemental loads in combination with pressure may govern the required wall thickness.
+
 Type B, Class 1 components are limited to Level 2 and 3 assessments.
 
 Type B, Class 2 components do not have a design equation that specifically relates pressure (or liquid fill height for tanks) and/or other loads, as applicable, to a required wall thickness. These components have a code design procedure to determine an acceptable configuration. Type B, Class 2 components typically exist at a major structural discontinuity and involve the satisfaction of a local reinforcement requirement (e.g. nozzle reinforcement area), or necessitate the computation of a stress level based upon a given load condition, geometry, and thickness configuration (e.g. flange design). These rules typically result in one component with a thickness that is dependent upon that of another component. Design rules of this type have thickness interdependency, and the definition of a minimum thickness for a component is ambiguous.
@@ -48,6 +49,7 @@ Type B, Class 2 components do not have a design equation that specifically relat
 Type B, Class 2 components are limited to Level 3 assessments.
 
 Type C Components – A component that does not have a design equation which specifically relates pressure (or liquid fill height for tanks) and/or other loads, as applicable, to a required wall thickness. In addition, these components do not have a code design procedure to determine local stresses.
+
 Type C components are limited to Level 3 assessments.
 
 An example output of the Type and level 1,2,3 assessment applicability for carbon steel Straight Section of Piping, Elbow or Bend - No Structural Attachments, NPS 3 with design temperature 100F:
