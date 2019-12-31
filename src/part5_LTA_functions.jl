@@ -82,9 +82,38 @@ end # let end
 end # function end
 
 @doc """
-Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
+    sc(metal_loss_categorization::String; annex2c_tmin_category::String, sβ::Float64, cβ::Float64)::Array{Float64}
+
+s and c parameter determination\n
+LTA = s and c - see Figure 5.2\n
+For groove like flaws::\n
+gl = length of the Groove-Like Flaw based on future corroded condition.\n
+gw = width of the Groove-Like Flaw based on future corroded condition.\n
+β = orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable\n
+    For grooves located on cylinders and cones orientated at an angle to the longitudinal axis (Figure 5.4) - eq (5.1) and eq (5.2) may be used to determine the s and c parameters\n
+ """
+ function sc(metal_loss_categorization::String; annex2c_tmin_category::String, β::Float64, gl::Float64, gw::Float64)::Array{Float64}
+     let s = s, c = c
+     @assert (β >=0.0) && (β <=90.0) "Invalid input : Please enter a value between 0 and 90 degrees - see API 579 2016 figure 5"
+     if (metal_loss_categorization == "LTA")
+         s = s
+         c = c
+     elseif (metal_loss_categorization == "Groove-Like Flaw" && (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" ||
+         annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "API 650 Storage Tanks"|| annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
+         annex2c_tmin_category == "MAWP for External Pressure"))
+         # if β is less than 90 degrees, then adjust the longitudinal extent of the flaw - note determine angels based on center line
+         s = (gl * cosd(β)) + (gw * sind(β)) # for β < 90 Degrees (5.1)
+         # if β is less than 90 degrees, then adjust the circumferential extent of the flaw - note determine angels based on center line
+         c = (gl * sind(β)) + (gw * cosd(β)) # for β < 90 Degrees (5.2)
+     end
+     return s_c =[s,c]
+ end # let end
+end # function end
+
+@doc """
+    Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
-    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9)
+    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
 
     Variables\n
     equipment_group = "piping" # "vessel", "tank"\n
@@ -92,7 +121,7 @@ Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",f
     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]\n
     flaw_location = "external" # "External","Internal"\n
-    metal_loss_categorization = "groove" # "LTA" or "groove"\n
+    metal_loss_categorization = "Groove-Like Flaw" # "LTA" or "Groove-Like Flaw"\n
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"\n
     tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.\n
     trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.\n
@@ -118,7 +147,7 @@ Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",f
 """->
 function Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
-    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9)
+    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]) "Invalid entry must be any of the following tmin groups: 'Cylindrical Shell','Spherical Shell','Hemispherical Head','Elliptical Head','Torispherical Head','Conical Shell','Toriconical Head','Conical Transition','Nozzles Connections in Shells',
@@ -126,7 +155,7 @@ function Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="
     'MAWP for External Pressure','Branch Connections','API 650 Storage Tanks' "
     @assert any(equipment_group .== ["piping", "vessel", "tank"]) "Invalid input: please enter either: 'piping','vessel','tank' "
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
-    @assert any(metal_loss_categorization .== ["LTA", "groove"]) "Invalid input: please enter either: 'LTA', 'groove' "
+    @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
 
 print("Begin -- Level 1 Assessment - API 579 June 2016 Edition\n")
@@ -153,7 +182,12 @@ tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for L
 tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
 
 # STEP 3 – Determine the minimum measured thickness in the LTA, tmm , and the dimensions, s and c (see paragraph 5.3.3.2.b) for the CTP.
-# s and c cetermined above
+# s and c
+# User define for LTA and Groove-Like flaw
+# For For cylinders and cones @ groove is orientated at an angle to the longitudinal axis, then the groove-like flaw profile can be projected on to the longitudinal and circumferential planes using the following equations to establish the equivalent LTA dimensions
+out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,β=β,gl=gl,gw=gw)
+s = out[1]
+c = out[2]
 tmm = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
@@ -167,67 +201,69 @@ flaw_size_accept = Part5LTAFlawSizeLevel1Acceptance(x,equipment_group)
 # STEP 6 – If the region of metal loss is categorized as an LTA (i.e. the LTA is not a groove), then proceed to STEP 7. If the region of metal loss is categorized as a groove and Equation (5.11) is satisfied,
 # then proceed to STEP 7. Otherwise, the Level 1 assessment is not satisfied and proceed to paragraph 5.4.2.3.
 if (flaw_size_accept == 1) # begin Step 6 - Flaw size criteria met
-    if (metal_loss_categorization == "groove" && (gr/(1-Rt)*tc) >= 0.5)
-         print("Groove meets equation 5.11 - Proceed to STEP 7\n")
+    if (metal_loss_categorization == "Groove-Like Flaw" && (gr/((1-Rt)*tc)) >= 0.5)
+         print("Groove-Like Flaw meets equation 5.11 - Proceed to STEP 7\n")
          step6_satisfied = 1
+     elseif (metal_loss_categorization == "Groove-Like Flaw" && (gr/((1-Rt)*tc)) < 0.5)
+         print("Groove-Like Flaw does not meet equation 5.11 - Level 1 assessment is not satisfied - Perform a level 2 assessment per API 579 2016 paragraph 5.4.2.3.\n")
+         step6_satisfied = 0
      elseif (metal_loss_categorization == "LTA")
          print("LTA - Proceed to STEP 7\n")
          step6_satisfied = 1
      end
  elseif (flaw_size_accept == 0)
      print("Assessment stopped as Step 5 Failed\n")
- end
+     step6_satisfied = 0
+    end
+
 
 # STEP 7 – Determine the MAWP for the component (see Annex 2C, paragraph 2C.2) using the thickness from STEP 2.
 # Annex2c
-if (step6_satisfied == 1) # begin step 7
-if (annex2c_tmin_category == "Cylindrical Shell")
-    #tmin here
-elseif (annex2c_tmin_category == "Spherical Shell")
-    #tmin here
-elseif (annex2c_tmin_category == "Hemispherical Head")
-    #tmin here
-elseif (annex2c_tmin_category == "Elliptical Head")
-    #tmin here
-elseif (annex2c_tmin_category == "Torispherical Head")
-    #tmin here
-elseif (annex2c_tmin_category == "Conical Shell")
-    #tmin here
-elseif (annex2c_tmin_category == "Toriconical Head")
-    #tmin here
-elseif (annex2c_tmin_category == "Conical Transition")
-    #tmin here
-elseif (annex2c_tmin_category == "Nozzles Connections in Shells")
-    #tmin here
-elseif (annex2c_tmin_category == "Junction Reinforcement Requirements at Conical Transitions")
-    #tmin here
-elseif (annex2c_tmin_category == "Tubesheets")
-    #tmin here
-elseif (annex2c_tmin_category == "Flat head to cylinder connections")
-    #tmin here
-elseif (annex2c_tmin_category == "Bolted Flanges")
-    #tmin here
-elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
-MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
-print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
-MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
-print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
-MAWP = minimum([MAWPc,MAWPl])
-print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
-elseif (annex2c_tmin_category == "Boiler Tubes")
-    #tmin here
-elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
-    #tmin here
-elseif (annex2c_tmin_category == "MAWP for External Pressure")
-    #tmin here
-elseif (annex2c_tmin_category == "Branch Connections")
-    #tmin here
-elseif (annex2c_tmin_category == "API 650 Storage Tanks")
-    #tmin here
-end # end equations
-elseif (step6_satisfied == 0)
-    print("Step 7 Not Conducted Step 6 not satisfied")
-end
+if (step6_satisfied == 1) # begin step 7 onwards
+    if (annex2c_tmin_category == "Cylindrical Shell")
+        #tmin here
+    elseif (annex2c_tmin_category == "Spherical Shell")
+        #tmin here
+    elseif (annex2c_tmin_category == "Hemispherical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Elliptical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Torispherical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Conical Shell")
+        #tmin here
+    elseif (annex2c_tmin_category == "Toriconical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Conical Transition")
+        #tmin here
+    elseif (annex2c_tmin_category == "Nozzles Connections in Shells")
+        #tmin here
+    elseif (annex2c_tmin_category == "Junction Reinforcement Requirements at Conical Transitions")
+        #tmin here
+    elseif (annex2c_tmin_category == "Tubesheets")
+        #tmin here
+    elseif (annex2c_tmin_category == "Flat head to cylinder connections")
+        #tmin here
+    elseif (annex2c_tmin_category == "Bolted Flanges")
+        #tmin here
+    elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
+        MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
+        print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
+        MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
+        print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
+        MAWP = minimum([MAWPc,MAWPl])
+        print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
+    elseif (annex2c_tmin_category == "Boiler Tubes")
+        #tmin here
+    elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
+        #tmin here
+    elseif (annex2c_tmin_category == "MAWP for External Pressure")
+        #tmin here
+    elseif (annex2c_tmin_category == "Branch Connections")
+        #tmin here
+    elseif (annex2c_tmin_category == "API 650 Storage Tanks")
+        #tmin here
+    end # end equations
 
 # STEP 8 – Enter Figure 5.6 for a cylindrical shell or Figure 5.7 for a spherical shell with the calculated
 #  values of λ and Rt . If the point defined by the intersection of these values is on or above the curve, then
@@ -346,4 +382,7 @@ labels = ["tc", "tm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MA
 part_5_level_1_calculated_parameters = [tc, tmm, Rt, lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
 out = hcat(labels,part_5_level_1_calculated_parameters)
 return out
+elseif (step6_satisfied == 0)
+    print("Step 7 onwards Not Conducted Step 6 not satisfied")
+end
 end # function end

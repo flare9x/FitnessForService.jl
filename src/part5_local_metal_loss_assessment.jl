@@ -29,7 +29,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
     equipment_group = "piping" # "vessel", "tank"
     flaw_location = "external" # "External","Internal"
-    metal_loss_categorization = "LTA" # "LTA" or "groove"
+    metal_loss_categorization = "Groove-Like Flaw" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
     tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
     trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
@@ -49,9 +49,9 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     # Flaw dimensions
     s = 6.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
     c = 2.0 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
-    El = 1.0
-    Ec = 1.0
-    RSFa = 0.9
+    Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
+    El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
+    RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9
 
     # For all assessments determine far enough from structural discontinuity
     # Flaw-To-Major Structural Discontinuity Spacing
@@ -69,11 +69,17 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
         lmsd_satisfied = 0
     end
 
+    # Groove Like Flaw dimensions
+    gl = .05 # length of the Groove-Like Flaw based on future corroded condition.
+    gw = .4 # width of the Groove-Like Flaw based on future corroded condition.
+    gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.
+    β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.
+
 # Perform level 1 assessment
 if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessment
     #let part_5_lta_output = Array{Any,2},
     part_5_lta_output = Part5LTALevel1(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
-        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa)
+        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
