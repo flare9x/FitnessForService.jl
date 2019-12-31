@@ -1,19 +1,17 @@
 # PART 5 – ASSESSMENT OF LOCAL METAL LOSS
 
 # Determine Asessment Applicability
-"""
-Determine the assessment applicability
-@doc DesignCodeCriteria
-@doc MaterialToughness
-@doc CyclicService
-@doc Part5ComponentType
-"""
+#Determine the assessment applicability
+# @doc DesignCodeCriteria
+# @doc MaterialToughness
+# @doc CyclicService
+# @doc Part5ComponentType
 print("Begin -- Assessment Applicability and Component Type Checks\n")
 design = DesignCodeCriteria("ASME B31.3 Piping Code")
 toughness = MaterialToughness("Certain")
-cylic = CyclicService(100, "Meets Part 14")
-x = Part5ComponentType("Straight Section of Piping, Eblow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
-part5_applicability = Part5AsessmentApplicability(x,design,toughness,cylic)
+cyclic = CyclicService(100, "Meets Part 14")
+x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
+part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic)
 
 # For all assessments - determine the inspection data grid
 M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
@@ -26,7 +24,6 @@ CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 
 # Level 1 fit for service
-#if (lmsd_satisfied == 1) # begin level 1 assessment
     annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
@@ -56,9 +53,6 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     Ec = 1.0
     RSFa = 0.9
 
-    part_5_lta_output = Part5LTALevel1("Straight Pipes Subject To Internal Pressure"; equipment_group="piping", flaw_location="external", metal_loss_categorization="LTA", units="lbs-in-psi", tnom=.3,
-            trd=.3, FCA=0.0, FCAml=0.0, LOSS=0.0, Do=3.5, D=2.9, P=1480.0, S=20000.0, E=1.0, MA=0.0, Yb31=0.4, tsl=0.0, spacings=0.5, s=6.0, c=2.0, El=1.0, Ec=1.0, RSFa=0.9)
-
     # For all assessments determine far enough from structural discontinuity
     # Flaw-To-Major Structural Discontinuity Spacing
     L1msd = [12.0] # distance to the nearest major structural discontinuity.
@@ -68,24 +62,28 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     L5msd = [12.0] # distance to the nearest major structural discontinuity.
     Lmsd = minimum([L1msd,L2msd,L3msd,L4msd,L5msd])
     if (Lmsd[1] >= (1.8*(sqrt(D*(trd - LOSS - FCA)))))
-        print("Satisfied - Flaw is located far enough from structural discontinuity")
+        print("Satisfied - Flaw is located far enough from structural discontinuity\n")
         lmsd_satisfied = 1
     else
-        print("Not satisfied - Flaw is too close to a structural discontinuity - Conduct a level 3 assessment")
+        print("Not satisfied - Flaw is too close to a structural discontinuity - Conduct a level 3 assessment\n")
         lmsd_satisfied = 0
     end
 
 # Perform level 1 assessment
 if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessment
-
-part_5_lta_output = Part5LTALevel1(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
+    #let part_5_lta_output = Array{Any,2},
+    part_5_lta_output = Part5LTALevel1(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa)
+    #end # let end
+elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
+    print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
+elseif (part5_applicability[1] == 1 && lmsd_satisfied == 0)
+    print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
+elseif (part5_applicability[1] == 0 && lmsd_satisfied == 1)
+    print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
 end
 
-part_5_lta_output
-#============================
-
-
+#=
 # Level 2 Assessment
 # STEP 1 – Determine the CTP (see paragraph 5.3.3.2).
 # Conducted at the top of the script
@@ -132,3 +130,4 @@ if (part5_applicability[1] == 1) # begin level 1 assessment
 
 
 end # end piping level 1
+=#

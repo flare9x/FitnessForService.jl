@@ -82,9 +82,9 @@ end # let end
 end # function end
 
 @doc """
-Part5LTALevel1(x::Array{Int64};equipment_group::String="",flaw_location::String="",metal_loss_categorization::String="",units::String="",tnom::Float64=0.0,
-    trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,Do::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
-    tsl::Float64=0.0,spacings::Float64=0.0,L1msd::Float64=0.0,L2msd::Float64=0.0,L3msd::Float64=0.0,L4msd::Float64=0.0,L5msd::Float64=0.0,s::Float64=0.0,c::Float64=0.0)
+Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
+    trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
+    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9)
 
     Variables\n
     equipment_group = "piping" # "vessel", "tank"\n
