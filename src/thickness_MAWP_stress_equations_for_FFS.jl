@@ -41,8 +41,6 @@ function Pipingtcmin(P::Float64; Do::Float64=0.0, S::Float64=0.0, E::Float64=0.0
     return tcmin
 end
 
-Pipingtcmin(P, Do=Do, S=S, E=E, Yb31=Yb31, MA=MA)
-
 @doc """
     PipingMAWPc(S::Float64; E::Float64=0.0, t::Float64=0.0, MA::Float64=0.0, Do::Float64=0.0, Yb31::Float64=0.0)
 
@@ -100,9 +98,6 @@ function Pipingtlmin(P::Float64; Do::Float64=0.0, S::Float64=0.0, E::Float64=0.0
     tlmin =(P*Do)/(4*((S*E)+(P*Yb31)))+tsl+MA # (2C.149)
     return tlmin
 end
-
-Pipingtcmin(P, Do=Do, S=S, E=E, Yb31=Yb31, MA=MA)
-Pipingtlmin(P, Do=Do, S=S, E=E, Yb31=Yb31, tsl=tsl, MA=MA)
 
 @doc """
     PipingMAWPl(S::Float64; E::Float64=0.0, t::Float64=0.0, tsl::Float64=0.0, MA::Float64=0.0, Do::Float64=0.0, Yb31::Float64=0.0)

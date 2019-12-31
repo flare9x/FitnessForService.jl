@@ -1,11 +1,11 @@
 # Functions for the Part 5 LTA assessment
 
 @doc """
-Part5LTAFlawSizeLimitCriteria(equipment_group::String,units::String)::Array{Int64}
+    Part5LTAFlawSizeLimitCriteria(equipment_group::String,units::String,Rt::Float64,D::Float64,tc::Float64,tmm::Float64,FCAml::Float64)::Array{Int64}
 
 Determine if the flaw is acceptable per level 1 criteria
     """ ->
-function Part5LTAFlawSizeLimitCriteria(equipment_group::String,units::String)::Array{Int64}
+function Part5LTAFlawSizeLimitCriteria(equipment_group::String,units::String,Rt::Float64,D::Float64,tc::Float64,tmm::Float64,FCAml::Float64)::Array{Int64}
     let test_1 = 0, test_2 = 0, test_3 =.0, test_4 = 0
         @assert any(equipment_group .== ["piping","vessel","tank"]) "Invalid input - select either: 'piping' or 'vessel' or 'tank'"
 if (equipment_group == "piping" || equipment_group == "vessel" || equipment_group == "tank")
@@ -49,7 +49,7 @@ end # let end
 end
 
 @doc """
-    Part5LTAFlawSizeLevel1Acceptance(x::Array{Int64})::Array{Int64}
+    Part5LTAFlawSizeLevel1Acceptance(x::Array{Int64},equipment_group::String)::Int64
 
 Determine if the limiting flaw size criteria has met the level 1 requirments
 """ ->
@@ -112,8 +112,8 @@ Part5LTALevel1(x::Array{Int64};equipment_group::String="",flaw_location::String=
     # Flaw dimensions\n
     s = 5.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,\n
     c = 1.5 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .\n
-    Ec = circumferential weld joint efficiency.\n
-    El = longitudinal weld joint efficiency.\n
+    Ec = 1.0 circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    El = 1.0 longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
 
 """->
 function Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
@@ -161,7 +161,7 @@ Rt = (tmm-FCA) / tc # remaining thickness ratio. # (5.5)
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
-x = Part5LTAFlawSizeLimitCriteria(equipment_group,units)
+x = Part5LTAFlawSizeLimitCriteria(equipment_group,units,Rt,D,tc,tm,FCAml)
 flaw_size_accept = Part5LTAFlawSizeLevel1Acceptance(x,equipment_group)
 
 # STEP 6 – If the region of metal loss is categorized as an LTA (i.e. the LTA is not a groove), then proceed to STEP 7. If the region of metal loss is categorized as a groove and Equation (5.11) is satisfied,
@@ -209,11 +209,11 @@ elseif (annex2c_tmin_category == "Bolted Flanges")
     #tmin here
 elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
 MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
-print("Piping MAWPc = ",round(MAWPc, digits=2),"psi\n")
+print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
 MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
-print("Piping MAWPl = ",round(MAWPl, digits=2),"psi\n")
+print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
 MAWP = minimum([MAWPc,MAWPl])
-print("Final MAWP = ",round(MAWP, digits=2),"psi\n")
+print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
 elseif (annex2c_tmin_category == "Boiler Tubes")
     #tmin here
 elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
@@ -229,9 +229,69 @@ elseif (step6_satisfied == 0)
     print("Step 7 Not Conducted Step 6 not satisfied")
 end
 
-# Step 8
-Mt =(1.001 - 0.014195*lambda + 0.2909* (lambda^2) - 0.09642*(lambda^3) + 0.02089* (lambda^4) - 0.003054 * (lambda ^5) + 2.957*(10^-4)*(lambda^6) - 1.8462*(10^-5)*(lambda^7) + (7.1553*(10^-7))*(lambda^8)-1.5631*(10^-8)*(lambda^9)+1.4656*(10^-10)*(lambda^10))
-RSF = Rt / (1-1/Mt*(1-Rt))
+# STEP 8 – Enter Figure 5.6 for a cylindrical shell or Figure 5.7 for a spherical shell with the calculated
+#  values of λ and Rt . If the point defined by the intersection of these values is on or above the curve, then
+# the longitudinal extent (circumferential or meridional extent for spherical shells and formed heads) of the
+# flaw is acceptable for operation at the MAWP determined in STEP 7.
+
+# Calculate the Rt cut off curves
+# Table 5.2 – Folias Factor, Mt, Based on the Longitudinal or Meridional Flaw Parameter, λ, for Cylindrical, Conical and Spherical Shells
+if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
+    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
+    annex2c_tmin_category == "Toriconical Head")
+    # calculate Mt for Cylindrical Shell & Conical Shell
+    lambda_values = collect(0:0.5:20.0)
+    Mt_Cylindrical_or_Conical_Shell = zeros(size(lambda_values,1))
+        @inbounds for i = 1:size(lambda_values,1)
+        Mt_Cylindrical_or_Conical_Shell[i] = round((1.001 - 0.014195*lambda_values[i] + 0.2909* (lambda_values[i]^2) - 0.09642*(lambda_values[i]^3) + 0.02089* (lambda_values[i]^4) - 0.003054 * (lambda_values[i] ^5) + 2.957*(10^-4)*(lambda_values[i]^6) - 1.8462*(10^-5)*(lambda_values[i]^7) + (7.1553*(10^-7))*(lambda_values[i]^8)-1.5631*(10^-8)*(lambda_values[i]^9)+1.4656*(10^-10)*(lambda_values[i]^10)),digits=3)
+    end # end loop
+    # calculate Rt for Cylindrical Shell & Conical Shell
+    Rt_Cylindrical_or_Conical_Shell = zeros(size(lambda_values,1))
+    i=1
+        @inbounds for i = 1:size(Rt_Cylindrical_or_Conical_Shell,1)
+            if (lambda_values[i] <= 0.354)
+            Rt_Cylindrical_or_Conical_Shell[i] = 0.2
+        elseif (0.354 < lambda_values[i] < 20.0)
+            Rt_Cylindrical_or_Conical_Shell[i] = ((RSFa-(RSFa/Mt_Cylindrical_or_Conical_Shell[i]))*(1-(RSFa/Mt_Cylindrical_or_Conical_Shell[i]))^-1)
+        elseif (lambda_values[i] >= 20.0)
+            Rt_Cylindrical_or_Conical_Shell[i] = 0.9
+        end
+    end # end loop
+elseif (annex2c_tmin_category == "Spherical Shell") # begin spherical shell
+    lambda_values = collect(0:0.5:20.0)
+    Mt_Spherical_Shell = zeros(size(lambda_values,1))
+    @inbounds for i = 1:size(lambda_values,1)
+    Mt_Spherical_Shell[i] = round((1.0005 + 0.49001*lambda_values[i] + 0.32409*(lambda_values[i])^2) / (1.0 + 0.50144*(lambda_values[i]) - 0.011067*(lambda_values[i])^2),digits=3)
+end # loop end
+# calculate Rt for Spherical Shell
+Rt_Spherical_Shell = zeros(size(lambda_values,1))
+i=1
+    @inbounds for i = 1:size(Rt_Spherical_Shell ,1)
+        if (lambda_values[i] <= 0.330)
+        Rt_Spherical_Shell[i] = 0.2
+    elseif (0.330 < lambda_values[i] < 20.0)
+        Rt_Spherical_Shell[i] = ((RSFa-(RSFa/Mt_Spherical_Shell[i]))*(1-(RSFa/Mt_Spherical_Shell[i]))^-1)
+    elseif (lambda_values[i] >= 20.0)
+        Rt_Spherical_Shell[i] = 0.9
+        end
+    end # end loop
+end # end Rt cut off curve
+
+# Determine Mt based
+if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
+    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
+    annex2c_tmin_category == "Toriconical Head")
+    Mt =(1.001 - 0.014195*lambda + 0.2909* (lambda^2) - 0.09642*(lambda^3) + 0.02089* (lambda^4) - 0.003054 * (lambda ^5) + 2.957*(10^-4)*(lambda^6) - 1.8462*(10^-5)*(lambda^7) + (7.1553*(10^-7))*(lambda^8)-1.5631*(10^-8)*(lambda^9)+1.4656*(10^-10)*(lambda^10))
+elseif (annex2c_tmin_category == "Spherical Shell")
+    Mt = (1.0005 + 0.49001*lambda + 0.32409*(lambda)^2) / (1.0 + 0.50144*(lambda) - 0.011067*(lambda)^2) # spheres
+end
+
+#+++ to do - add plotting for the Rt cut off curve
+# If the point defined by the intersection of these values is on or above the curve, then
+# the longitudinal extent (circumferential or meridional extent for spherical shells and formed heads) of the
+# flaw is acceptable for operation at the MAWP determined in STEP 7.
+
+RSF = Rt / (1-1/Mt*(1-Rt)) # eq (5.12)
 MAWPr = MAWP*(RSF/RSFa)
 
 if (RSF >= RSFa)
@@ -239,7 +299,7 @@ if (RSF >= RSFa)
     print("Region of metal loss is acceptable at the MAWP from Step 7\n")
 else
     MAWPr = MAWP*(RSF/RSFa) # (eq (2.2))
-    print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=2),"psi\n")
+    print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=3),"psi\n")
 end
 
 # Determing if MAWPr exceeds equipment MAWP or design pressure

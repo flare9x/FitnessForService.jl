@@ -1,7 +1,8 @@
 # PART 5 – ASSESSMENT OF LOCAL METAL LOSS
 
 # Determine Asessment Applicability
-""" Determine the assessment applicability
+"""
+Determine the assessment applicability
 @doc DesignCodeCriteria
 @doc MaterialToughness
 @doc CyclicService
