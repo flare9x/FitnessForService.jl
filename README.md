@@ -9,7 +9,7 @@
  add https://github.com/flare9x/FitnessForService.jl
  ```
 
-## API 579 PART 5 – ASSESSMENT OF LOCAL METAL LOSS - Level 1 Assessment
+## API 579 Part 5 – Assessment of Local Metal Loss - Level 1 Assessment
 
 API 579 have specific conditions that must be met which determine the applicability of the level 1,2 or 3 assessment. Limitations of the assessments include:
 *   The flaw is a LTA per API 579 or Groove-like-flaw
