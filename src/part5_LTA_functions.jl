@@ -188,7 +188,7 @@ tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and
 out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,β=β,gl=gl,gw=gw)
 s = out[1]
 c = out[2]
-tmm = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
+tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
 Rt = (tmm-FCA) / tc # remaining thickness ratio. # (5.5)
@@ -468,7 +468,7 @@ c = out[2]
 tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
-Rt = (tmm-FCA) / tc # remaining thickness ratio. # (5.5)
+Rt = (tmm[1]-FCA) / tc # remaining thickness ratio. # (5.5)
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
@@ -624,6 +624,34 @@ thickness_out = reshape(thickness, size(subset_out,1),size(subset_out,2)-1) # re
 data = [subset_out thickness_out] # join subset and thickness array
 
 # begin the parameter calculations, lambda, Ai, Ao, Mt and RSF
+annex2c_tmin_category = "Cylindrical Shell"
+lambda_i_out = zeros(size(data,1))
+A_i_out = zeros(size(data,1))
+Ao_i_out = zeros(size(data,1))
+Mt_i_out = zeros(size(data,1))
+RSFa_i_out = zeros(size(data,1))
+@inbounds for i = 1:size(data,1)
+lambda_i_out[i] = (1.285*data[i,4])/(sqrt(D*tc)) # s = Si
+#A_i_out[i]  find a good method or accurate method for the area........
+Ao_i_out[i]  = data[i,4] * tc
+if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
+    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
+    annex2c_tmin_category == "Toriconical Head")
+    # calculate Mt for Cylindrical Shell & Conical Shell
+        Mt_i_out[i] = round((1.001 - 0.014195*lambda_i_out[i] + 0.2909* (lambda_i_out[i]^2) - 0.09642*(lambda_i_out[i]^3) + 0.02089* (lambda_i_out[i]^4) - 0.003054 * (lambda_i_out[i] ^5) + 2.957*(10^-4)*(lambda_i_out[i]^6) - 1.8462*(10^-5)*(lambda_i_out[i]^7) + (7.1553*(10^-7))*(lambda_i_out[i]^8)-1.5631*(10^-8)*(lambda_i_out[i]^9)+1.4656*(10^-10)*(lambda_i_out[i]^10)),digits=3)
+    elseif (annex2c_tmin_category == "Spherical Shell") # begin spherical shell
+            Mt_i_out[i] = round((1.0005 + 0.49001*lambda_i_out[i] + 0.32409*(lambda_i_out[i])^2) / (1.0 + 0.50144*(lambda_i_out[i]) - 0.011067*(lambda_i_out[i])^2),digits=3)
+end # end conditional statement
+RSFa_i_out[i] =
+end # end loops
+
+output = [lambda_i_out, Mt_i_out]
+
+
+
+
+(1.285*s)/(sqrt(D*tc))
+
 
 
 
