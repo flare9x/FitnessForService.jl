@@ -24,13 +24,14 @@ function CTP_Grid(CTPGrid::Array{Float64,2})  # may add plotting feature later -
     @inbounds for i in 1:size(CTPGrid,1)
         Circumferential_CTP[i] = minimum(CTPGrid[row_index[i],1:size(CTPGrid,2)])
     end
+    i=2
     @inbounds for i in 1:size(CTPGrid,2)
-        Longitudinal_CTP[i] = minimum(CTPGrid[1:size(CTPGrid,1),col_index[i]:size(CTPGrid,2)])
+        Longitudinal_CTP[i] = minimum(CTPGrid[1:size(CTPGrid,1),col_index[i]])
     end
 
     # find tmm
     minC_CTP = minimum(Circumferential_CTP)
     minL_CTP = minimum(Longitudinal_CTP)
     tmm = minimum([minC_CTP,minL_CTP]) # minimum measured thickness determined at the time of the inspection.
-        return tmm
+        return tmm, Longitudinal_CTP
 end

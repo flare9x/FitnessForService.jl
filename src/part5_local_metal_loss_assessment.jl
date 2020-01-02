@@ -11,7 +11,7 @@ creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; de
 design = DesignCodeCriteria("ASME B&PV Code, Section VIII, Division 1")
 toughness = MaterialToughness("Certain")
 cyclic = CyclicService(100, "Meets Part 14")
-x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=0.0,Lss=0.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
+x = Part5ComponentType("Cylindrical Vessel", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=3.0, design_temperature=500.0, units="lbs-in-psi")
 part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic,creep_range)
 
 # For all assessments - determine the inspection data grid
@@ -30,7 +30,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
     equipment_group = "piping" # "vessel", "tank"
     flaw_location = "external" # "External","Internal"
-    metal_loss_categorization = "Groove-Like Flaw" # "LTA" or "Groove-Like Flaw"
+    metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
     tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
     trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
