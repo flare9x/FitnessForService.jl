@@ -644,7 +644,7 @@ if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Co
     elseif (annex2c_tmin_category == "Spherical Shell") # begin spherical shell
             Mt_i_out[i] = round((1.0005 + 0.49001*lambda_i_out[i] + 0.32409*(lambda_i_out[i])^2) / (1.0 + 0.50144*(lambda_i_out[i]) - 0.011067*(lambda_i_out[i])^2),digits=3)
 end # end conditional statement
-RSFa_i_out[i] =
+# RSFa_i_out[i] =
 end # end loops
 
 output = [lambda_i_out, Mt_i_out]
