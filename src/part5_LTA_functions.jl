@@ -387,6 +387,8 @@ elseif (step6_satisfied == 0)
 end
 end # function end
 
+#=
+
 @doc """
     Part5LTALevel2(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
@@ -783,3 +785,5 @@ elseif (step6_satisfied == 0)
     print("Step 7 onwards Not Conducted Step 6 not satisfied")
 end
 end # function end
+
+=#
