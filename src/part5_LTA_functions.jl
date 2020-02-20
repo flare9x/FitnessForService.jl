@@ -323,6 +323,8 @@ elseif (annex2c_tmin_category == "Spherical Shell")
 end
 
 #+++ to do - add plotting for the Rt cut off curve
+using Gadfly
+plot(x=rand(10), y=rand(10))
 # If the point defined by the intersection of these values is on or above the curve, then
 # the longitudinal extent (circumferential or meridional extent for spherical shells and formed heads) of the
 # flaw is acceptable for operation at the MAWP determined in STEP 7.
@@ -350,10 +352,10 @@ elseif (MAWPr < P || MAWPr < MAWP)
 end
 
 # STEP 9 – Evaluate the longitudinal extent of the flaw for cylindrical and conical shells.
-if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
+if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
     print("The component is a cylindrical shell, conical shell, or elbow\n Begin -- evaluate the circumferential extent\n")
 # STEP 9.1 – If Equation (5.13) is satisfied, the circumferential extent is acceptable, and no further evaluation is required. Otherwise, proceed to STEP 9.2.
-if (c <= (2*s)*El/Ec) # eq (5.13)
+if (c <= (2*s)*(El/Ec)) # eq (5.13)
     print("eq 5.13 satisfied - no further evaluation is required\n")
     step_9_satisfied = 1
 else
@@ -387,7 +389,14 @@ elseif (step6_satisfied == 0)
 end
 end # function end
 
-#=
+# Simpsons rule odd number: https://scicomp.stackexchange.com/questions/25649/composite-simpsons-rule-with-odd-intervals
+# Simpsons 3/8 rule: https://en.wikipedia.org/wiki/Simpson's_rule#Simpson.27s_3.2F8_rule
+# Even numbers - use traditional simpsons rule - stesp of x , 4,2,4,2 etc.....
+# Odd numbers - use 3/8 rule as above
+# write function
+# if length(x) isodd iseven do this....
+
+#
 
 @doc """
     Part5LTALevel2(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
@@ -570,16 +579,20 @@ Se = s2 .+ spacings
 Si = Se - Ss
 data_needed = [long_CTP Ss s2 Se Si]
 ranked_ascending_order = sortslices(data_needed,dims=1) # sort data by thickness in ascending order
+    index_CTP = [s2 long_CTP]
 
 # STEP 8.2 – Set the initial evaluation starting point as the location of maximum metal loss. This is the location in the thickness profile where tmm is recorded.
 # Subsequent starting points should be in accordance with the ranking in STEP 8.1.
-subset_1_starting = ranked_ascending_order[1,1:5]
+RSFi = zeros(size(long_CTP,1))
+for i in 1:size(ranked_ascending_order,1)
+subset_1_starting = ranked_ascending_order[i,1:5]  # for loop here to grab the starting portion.....
+if any(subset_1_starting .== 0.0) != 1
 
 # STEP 8.3 – At the current evaluation starting point, subdivide the thickness profile into a series of
 # subsections (see Figure 5.8). The number and extent of the subsections should be chosen based on
 # the desired accuracy and should encompass the variations in metal loss.
 
-# Build Ss, c, Se and Si for the particualr subset
+# Build Ss, c, Se and Si for the particualr subset (lower / center and upper bounds)
 # for loop to iterate - stop when hit 0 and subsequently stop at the upper limit
 subset_min_direction = subset_1_starting[2]/spacings  # find the lower limit of the index postion of the particualr subset
 subset_max_direction = subset_1_starting[4]/spacings # find the maximum limit of the index postion of the particualr subset
@@ -591,142 +604,88 @@ c_t_at_grid_position = zeros(Int64.(subset_max),1)
 Se_grid_position = zeros(Int64.(subset_max),1)
 Se_t_at_grid_position = zeros(Int64.(subset_max),1)
 Si_out = zeros(Int64.(subset_max),1)
-@inbounds for i = 1:size(Ss_out,1)
-    if (i == 1)
-    Ss_grid_position[i] = subset_1_starting[2]
-    c_grid_position[i] = subset_1_starting[3]
-    Se_grid_position[i] = subset_1_starting[4]
-    Si_out[i] = subset_1_starting[5]
-elseif (i >=2)
-    Ss_grid_position[i] = Ss_grid_position[i-1] - spacings
-    c_grid_position[i] = subset_1_starting[3]
-    Se_grid_position[i] = Se_grid_position[i-1] + spacings
-    Si_out[i] = Se_out[i] - Ss_out[i]
+@inbounds for k = 1:size(Si_out,1)
+    if (k == 1)
+    Ss_grid_position[k] = subset_1_starting[2]
+    c_grid_position[k] = subset_1_starting[3]
+    Se_grid_position[k] = subset_1_starting[4]
+    Si_out[k] = subset_1_starting[5]
+elseif (k >=2)
+    Ss_grid_position[k] = Ss_grid_position[k-1] - spacings
+    c_grid_position[k] = subset_1_starting[3]
+    Se_grid_position[k] = Se_grid_position[k-1] + spacings
+    Si_out[k] = Se_grid_position[k] - Ss_grid_position[k]
 end
 end
 
 subset_out = [Ss_grid_position c_grid_position Se_grid_position Si_out]
 
-# for any given Ss, c and Se :: find the relevant thickness for input to the Area calculation
-thickness = zeros(length(subset_out)-size(subset_out,1)) # initialize output
-for i = 1:length(subset_out)-size(subset_out,1)
-    print(" ", subset_out[i])
-    element = subset_out[i]
-    print("element ",element)
-    for j = 1:length(long_CTP)
-        if (element == s2[j])
-            thickness[i] = long_CTP[j]
-            print(long_CTP[j])
-        end # end conditional statement
-    end # end inner loop
-end # end outer loop
-
-thickness_out = reshape(thickness, size(subset_out,1),size(subset_out,2)-1) # reshape the output array to same dimensions as the subset_out array
-
-data = [subset_out thickness_out] # join subset and thickness array
-
-# begin the parameter calculations, lambda, Ai, Ao, Mt and RSF
-annex2c_tmin_category = "Cylindrical Shell"
-lambda_i_out = zeros(size(data,1))
-A_i_out = zeros(size(data,1))
-Ao_i_out = zeros(size(data,1))
-Mt_i_out = zeros(size(data,1))
-RSFa_i_out = zeros(size(data,1))
-@inbounds for i = 1:size(data,1)
-lambda_i_out[i] = (1.285*data[i,4])/(sqrt(D*tc)) # s = Si
-#A_i_out[i]  find a good method or accurate method for the area........
-Ao_i_out[i]  = data[i,4] * tc
-if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
-    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
-    annex2c_tmin_category == "Toriconical Head")
-    # calculate Mt for Cylindrical Shell & Conical Shell
-        Mt_i_out[i] = round((1.001 - 0.014195*lambda_i_out[i] + 0.2909* (lambda_i_out[i]^2) - 0.09642*(lambda_i_out[i]^3) + 0.02089* (lambda_i_out[i]^4) - 0.003054 * (lambda_i_out[i] ^5) + 2.957*(10^-4)*(lambda_i_out[i]^6) - 1.8462*(10^-5)*(lambda_i_out[i]^7) + (7.1553*(10^-7))*(lambda_i_out[i]^8)-1.5631*(10^-8)*(lambda_i_out[i]^9)+1.4656*(10^-10)*(lambda_i_out[i]^10)),digits=3)
-    elseif (annex2c_tmin_category == "Spherical Shell") # begin spherical shell
-            Mt_i_out[i] = round((1.0005 + 0.49001*lambda_i_out[i] + 0.32409*(lambda_i_out[i])^2) / (1.0 + 0.50144*(lambda_i_out[i]) - 0.011067*(lambda_i_out[i])^2),digits=3)
-end # end conditional statement
-# RSFa_i_out[i] =
-end # end loops
-
-output = [lambda_i_out, Mt_i_out]
-
-
-
-
-(1.285*s)/(sqrt(D*tc))
-
-
-
-
-
-
-
-# end RSF analysis for first subset
-# begin analysis of the second subset
-
-
-
-
-
-
-
-# Calculate the Rt cut off curves
-# Table 5.2 – Folias Factor, Mt, Based on the Longitudinal or Meridional Flaw Parameter, λ, for Cylindrical, Conical and Spherical Shells
-if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
-    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
-    annex2c_tmin_category == "Toriconical Head")
-    # calculate Mt for Cylindrical Shell & Conical Shell
-    lambda_values = collect(0:0.5:20.0)
-    Mt_Cylindrical_or_Conical_Shell = zeros(size(lambda_values,1))
-        @inbounds for i = 1:size(lambda_values,1)
-        Mt_Cylindrical_or_Conical_Shell[i] = round((1.001 - 0.014195*lambda_values[i] + 0.2909* (lambda_values[i]^2) - 0.09642*(lambda_values[i]^3) + 0.02089* (lambda_values[i]^4) - 0.003054 * (lambda_values[i] ^5) + 2.957*(10^-4)*(lambda_values[i]^6) - 1.8462*(10^-5)*(lambda_values[i]^7) + (7.1553*(10^-7))*(lambda_values[i]^8)-1.5631*(10^-8)*(lambda_values[i]^9)+1.4656*(10^-10)*(lambda_values[i]^10)),digits=3)
-    end # end loop
-    # calculate Rt for Cylindrical Shell & Conical Shell
-    Rt_Cylindrical_or_Conical_Shell = zeros(size(lambda_values,1))
-    i=1
-        @inbounds for i = 1:size(Rt_Cylindrical_or_Conical_Shell,1)
-            if (lambda_values[i] <= 0.354)
-            Rt_Cylindrical_or_Conical_Shell[i] = 0.2
-        elseif (0.354 < lambda_values[i] < 20.0)
-            Rt_Cylindrical_or_Conical_Shell[i] = ((RSFa-(RSFa/Mt_Cylindrical_or_Conical_Shell[i]))*(1-(RSFa/Mt_Cylindrical_or_Conical_Shell[i]))^-1)
-        elseif (lambda_values[i] >= 20.0)
-            Rt_Cylindrical_or_Conical_Shell[i] = 0.9
+# place in a J loop - go throgh each - do MT AO etc....
+# trapezoid rule needed for area
+j = 7
+A_i = zeros(size(subset_out,1))
+for j in 1:size(subset_out,1)
+    starting_set = reshape(subset_out[j,1:size(subset_out,2)],1,4)
+    # trapezondonial rule - do trapezoid area and sum all across the profile
+    x = collect(starting_set[1]:spacings:starting_set[3])
+    grab_t = zero(x)
+    trapezoid_total_area = zero(x)
+    for t in 1:size(index_CTP,1) # loop through the thickness index
+        for ta in 1:size(x,1) # loop through the subset in question
+            if (x[ta] == index_CTP[t,1])
+                grab_t[ta] = tc - index_CTP[t,2] # it is the area of loss that is needed so t = tc - remaining wall
+            if ta == 1
+                trapezoid_total_area[ta] =  0.0
+            elseif ta > 1
+                trapezoid_total_area[ta] = spacings/2 *(grab_t[ta-1]+grab_t[ta])
+            end
         end
-    end # end loop
-elseif (annex2c_tmin_category == "Spherical Shell") # begin spherical shell
-    lambda_values = collect(0:0.5:20.0)
-    Mt_Spherical_Shell = zeros(size(lambda_values,1))
-    @inbounds for i = 1:size(lambda_values,1)
-    Mt_Spherical_Shell[i] = round((1.0005 + 0.49001*lambda_values[i] + 0.32409*(lambda_values[i])^2) / (1.0 + 0.50144*(lambda_values[i]) - 0.011067*(lambda_values[i])^2),digits=3)
-end # loop end
-# calculate Rt for Spherical Shell
-Rt_Spherical_Shell = zeros(size(lambda_values,1))
-i=1
-    @inbounds for i = 1:size(Rt_Spherical_Shell ,1)
-        if (lambda_values[i] <= 0.330)
-        Rt_Spherical_Shell[i] = 0.2
-    elseif (0.330 < lambda_values[i] < 20.0)
-        Rt_Spherical_Shell[i] = ((RSFa-(RSFa/Mt_Spherical_Shell[i]))*(1-(RSFa/Mt_Spherical_Shell[i]))^-1)
-    elseif (lambda_values[i] >= 20.0)
-        Rt_Spherical_Shell[i] = 0.9
         end
-    end # end loop
-end # end Rt cut off curve
+    end
 
-# Determine Mt based
-if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
-    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
-    annex2c_tmin_category == "Toriconical Head")
-    Mt =(1.001 - 0.014195*lambda + 0.2909* (lambda^2) - 0.09642*(lambda^3) + 0.02089* (lambda^4) - 0.003054 * (lambda ^5) + 2.957*(10^-4)*(lambda^6) - 1.8462*(10^-5)*(lambda^7) + (7.1553*(10^-7))*(lambda^8)-1.5631*(10^-8)*(lambda^9)+1.4656*(10^-10)*(lambda^10))
-elseif (annex2c_tmin_category == "Spherical Shell")
-    Mt = (1.0005 + 0.49001*lambda + 0.32409*(lambda)^2) / (1.0 + 0.50144*(lambda) - 0.011067*(lambda)^2) # spheres
+A_i[j] = sum(trapezoid_total_area) # Ai
 end
 
-#+++ to do - add plotting for the Rt cut off curve
-# If the point defined by the intersection of these values is on or above the curve, then
-# the longitudinal extent (circumferential or meridional extent for spherical shells and formed heads) of the
-# flaw is acceptable for operation at the MAWP determined in STEP 7.
+subset_out = hcat(subset_out,A_i)
 
-RSF = Rt / (1-1/Mt*(1-Rt)) # eq (5.12)
+# Calculate Ai_o = Si * tc
+Ai_o = subset_out[:,4] .*tc
+lambda = (1.285*subset_out[:,4])./sqrt(D*tc)
+
+
+# Mt
+Mt = zeros(size(subset_out,1))
+for k in 1:size(lambda,1)
+if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
+    annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
+    annex2c_tmin_category == "Toriconical Head")
+    Mt[k] =(1.001 - 0.014195*lambda[k] + 0.2909* (lambda[k]^2) - 0.09642*(lambda[k]^3) + 0.02089* (lambda[k]^4) - 0.003054 * (lambda[k] ^5) + 2.957*(10^-4)*(lambda[k]^6) - 1.8462*(10^-5)*(lambda[k]^7) + (7.1553*(10^-7))*(lambda[k]^8)-1.5631*(10^-8)*(lambda[k]^9)+1.4656*(10^-10)*(lambda[k]^10))
+elseif (annex2c_tmin_category == "Spherical Shell")
+    Mt[k] = (1.0005 + 0.49001*lambda[k] + 0.32409*(lambda[k])^2) / (1.0 + 0.50144*(lambda[k]) - 0.011067*(lambda[k])^2) # spheres
+    end
+end
+
+# append output to subset array
+subset_out = hcat(subset_out,Ai_o,lambda,Mt)
+
+# remaining strength factor RSF
+RSF = zeros(size(subset_out,1))
+k=1
+    for k in 1:size(subset_out,1)
+    RSF[k] = (1.0-(A_i[k]/Ai_o[k])) / (1.0- 1.0 / Mt[k]*(A_i[k]/Ai_o[k]))
+end
+
+subset_out = hcat(subset_out,RSF)
+
+RSFi[i] = minimum(RSF)
+elseif any(subset_1_starting .== 0.0) 1
+    RSFi[i] = 1.0
+end
+
+end # end loop
+
+RSF = minimum(RSFi)
+
 MAWPr = MAWP*(RSF/RSFa)
 
 if (RSF >= RSFa)
@@ -740,19 +699,19 @@ end
 # Determing if MAWPr exceeds equipment MAWP or design pressure
 if (MAWPr >= P || MAWPr >= MAWP)
     print("Component is acceptable for operating at the equipment design pressure or equipment MAWP\n")
-    print("Part 5 level 1 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 1 assessment\n")
-    level_1_satisfied = 1
+    print("Part 5 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 2 assessment\n")
+    level_2_satisfied = 1
 elseif (MAWPr < P || MAWPr < MAWP)
     print("Component is unacceptable for operating at the equipment design pressure or equipment MAWP\n")
-    print("Part 5 level 1 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 1 assessment\n")
-        level_1_satisfied = 0
+    print("Part 5 level 2 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 2 assessment\n")
+        level_2_satisfied = 0
 end
 
 # STEP 9 – Evaluate the longitudinal extent of the flaw for cylindrical and conical shells.
-if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
+if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
     print("The component is a cylindrical shell, conical shell, or elbow\n Begin -- evaluate the circumferential extent\n")
 # STEP 9.1 – If Equation (5.13) is satisfied, the circumferential extent is acceptable, and no further evaluation is required. Otherwise, proceed to STEP 9.2.
-if (c <= (2*s)*El/Ec) # eq (5.13)
+if (c <= (2*s)*(El/Ec)) # eq (5.13)
     print("eq 5.13 satisfied - no further evaluation is required\n")
     step_9_satisfied = 1
 else
@@ -777,13 +736,6 @@ end # end step 9.4
 elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category != "Conical Shell" || annex2c_tmin_category != "Pipe Bends Subject To Internal Pressure")
     print("The assessment is complete for all component types\n")
 end
-labels = ["tc", "tm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
-part_5_level_1_calculated_parameters = [tc, tmm, Rt, lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
-out = hcat(labels,part_5_level_1_calculated_parameters)
-return out
-elseif (step6_satisfied == 0)
-    print("Step 7 onwards Not Conducted Step 6 not satisfied")
-end
-end # function end
 
-=#
+end # end function
+end
