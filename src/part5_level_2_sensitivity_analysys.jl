@@ -1,29 +1,19 @@
-# PART 5 – ASSESSMENT OF LOCAL METAL LOSS
+# Sensitivty Analysis
+random_set = collect(.200:.005:.300)
+rand(random_set)
+final_MAWP_out = zeros(10000)
 
-# Determine Asessment Applicability
-#Determine the assessment applicability
-# @doc DesignCodeCriteria
-# @doc MaterialToughness
-# @doc CyclicService
-# @doc Part5ComponentType
-print("Begin -- Assessment Applicability and Component Type Checks\n")
-creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; design_temperature=100.0, units="nmm-mm-mpa")
-design = DesignCodeCriteria("ASME B31.3 Piping Code")
-toughness = MaterialToughness("Certain")
-cyclic = CyclicService(100, "Meets Part 14")
-x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
-part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic,creep_range)
-
+for i in 1:size(final_MAWP_out,1)
 # For all assessments - determine the inspection data grid
 M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
-M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, 0.220, 0.280, 0.250, 0.240, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
-M3 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.215, 0.255, 0.215, 0.145, 0.275, 0.170, 0.240, 0.250, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
-M4 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.170, 0.270, 0.190, 0.190, 0.285, 0.250, 0.225, 0.275, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, rand(random_set), rand(random_set), rand(random_set), rand(random_set), 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M3 = [0.300, 0.300, 0.300, 0.300, 0.300, rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M4 = [0.300, 0.300, 0.300, 0.300, 0.300, rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), rand(random_set), 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 M5 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 M6 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
-CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
-
+global CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+CTPGrid[4,6]
 # Level 1 fit for service
     annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
@@ -79,20 +69,6 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 # Perform level 1 assessment
 if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessment
     #let part_5_lta_output = Array{Any,2},
-    part_5_lta_output = Part5LTALevel1(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
-        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
-    #end # let end
-elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
-    print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
-elseif (part5_applicability[1] == 1 && lmsd_satisfied == 0)
-    print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
-elseif (part5_applicability[1] == 0 && lmsd_satisfied == 1)
-    print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
-end
-
-# Perform level 2 assessment
-if (part5_applicability[2] == 1 && lmsd_satisfied == 1) # begin level 2 assessment
-    #let part_5_lta_output = Array{Any,2},
     part_5_lta_output = Part5LTALevel2(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
@@ -104,3 +80,52 @@ elseif (part5_applicability[1] == 1 && lmsd_satisfied == 0)
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 1)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
 end
+end # end random for loop
+
+@doc Part5LTALevel2
+
+#output
+using DataFrames
+using CSV
+using Statistics
+out = DataFrame(hcat(final_MAWP_out))
+
+labels = ["Average MAWPr", "Maximum MAWPr", "Minimum MAWPr", "Actual MAWPr (known grid)"]
+average_MAWPr = mean(final_MAWP_out)
+max_MAWPr = maximum(final_MAWP_out)
+min_MAWPr = minimum(final_MAWP_out)
+actual_MAWPr = part_5_lta_output[10,2]
+
+mawp_stats = [average_MAWPr, max_MAWPr, min_MAWPr, actual_MAWPr]
+stats_out = hcat(labels,mawp_stats)
+
+CSV.write("C:/Users/Andrew.Bannerman/OneDrive - Shell/Documents/API CODES/level_2_LTA_grid_assumption_MAWPr_out.csv", out;delim=',')
+
+# s and c random
+s = 6.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
+c = 2.0 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
+Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
+El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
+
+s_random = collect(6.0:.5:20.0)
+c_random = collect(2.0:.5:12.0)
+
+step_9_satisfied = zeros(5000)
+criteria = zeros(5000)
+c_param = zeros(5000)
+
+for i in 1:5000
+    c = rand(c_random)
+    s = rand(s_random)
+if (c <= (2*s)*(El/Ec)) # eq (5.13)  # original = 38
+    print("eq 5.13 satisfied - no further evaluation is required\n")
+    step_9_satisfied[i] = 1.0
+    criteria[i] = ((2*s)*(El/Ec))
+    c_param[i] = c
+else
+    print("eq 5.13 not satisfied - Proceed to STEP 9.2\n")
+    step_9_satisfied[i] = 0.0
+    criteria[i] = ((2*s)*(El/Ec))
+    c_param[i] = c
+end # end step 9.1
+end # end loop

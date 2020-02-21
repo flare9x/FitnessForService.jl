@@ -323,8 +323,8 @@ elseif (annex2c_tmin_category == "Spherical Shell")
 end
 
 #+++ to do - add plotting for the Rt cut off curve
-using Gadfly
-plot(x=rand(10), y=rand(10))
+#using Gadfly
+#plot(x=rand(10), y=rand(10))
 # If the point defined by the intersection of these values is on or above the curve, then
 # the longitudinal extent (circumferential or meridional extent for spherical shells and formed heads) of the
 # flaw is acceptable for operation at the MAWP determined in STEP 7.
@@ -731,7 +731,8 @@ else
 end # end step 9.2 and 9.3
 end # end conditional step_9_satisfied
 if (step_9_satisfied == 0) # begin 9.4
-    MAWPr = MAWPr*(((tmm-FCAml)/tlmin))
+    MAWPr = MAWPr*(((tmm-FCAml)/tlmin)) #step 8 MAWPr
+    print("MAWP for the component can be adjusted using Equation (5.15). Otherwise a Level 2 or Level 3 assessment may be performed.")
 end # end step 9.4
 elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category != "Conical Shell" || annex2c_tmin_category != "Pipe Bends Subject To Internal Pressure")
     print("The assessment is complete for all component types\n")
