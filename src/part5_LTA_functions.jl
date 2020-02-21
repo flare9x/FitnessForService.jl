@@ -584,6 +584,7 @@ ranked_ascending_order = sortslices(data_needed,dims=1) # sort data by thickness
 # STEP 8.2 – Set the initial evaluation starting point as the location of maximum metal loss. This is the location in the thickness profile where tmm is recorded.
 # Subsequent starting points should be in accordance with the ranking in STEP 8.1.
 RSFi = zeros(size(long_CTP,1))
+i=1
 for i in 1:size(ranked_ascending_order,1)
 subset_1_starting = ranked_ascending_order[i,1:5]  # for loop here to grab the starting portion.....
 if any(subset_1_starting .== 0.0) != 1
@@ -622,8 +623,7 @@ subset_out = [Ss_grid_position c_grid_position Se_grid_position Si_out]
 
 # place in a J loop - go throgh each - do MT AO etc....
 # trapezoid rule needed for area
-j = 7
-A_i = zeros(size(subset_out,1))
+global A_i = zeros(size(subset_out,1))
 for j in 1:size(subset_out,1)
     starting_set = reshape(subset_out[j,1:size(subset_out,2)],1,4)
     # trapezondonial rule - do trapezoid area and sum all across the profile
@@ -643,7 +643,7 @@ for j in 1:size(subset_out,1)
         end
     end
 
-A_i[j] = sum(trapezoid_total_area) # Ai
+global A_i[j] = sum(trapezoid_total_area) # Ai
 end
 
 subset_out = hcat(subset_out,A_i)
@@ -654,14 +654,14 @@ lambda = (1.285*subset_out[:,4])./sqrt(D*tc)
 
 
 # Mt
-Mt = zeros(size(subset_out,1))
-for k in 1:size(lambda,1)
+global Mt = zeros(size(subset_out,1))
+for k in 1:size(subset_out,1)
 if (annex2c_tmin_category == "Cylindrical Shell" || annex2c_tmin_category == "Conical Shell" || annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure" || annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure" ||
     annex2c_tmin_category == "API 650 Storage Tanks" || annex2c_tmin_category == "MAWP for External Pressure" || annex2c_tmin_category == "Hemispherical Head" || annex2c_tmin_category == "Elliptical Head" || annex2c_tmin_category == "Torispherical Head" ||
     annex2c_tmin_category == "Toriconical Head")
-    Mt[k] =(1.001 - 0.014195*lambda[k] + 0.2909* (lambda[k]^2) - 0.09642*(lambda[k]^3) + 0.02089* (lambda[k]^4) - 0.003054 * (lambda[k] ^5) + 2.957*(10^-4)*(lambda[k]^6) - 1.8462*(10^-5)*(lambda[k]^7) + (7.1553*(10^-7))*(lambda[k]^8)-1.5631*(10^-8)*(lambda[k]^9)+1.4656*(10^-10)*(lambda[k]^10))
+    global Mt[k] =(1.001 - 0.014195*lambda[k] + 0.2909* (lambda[k]^2) - 0.09642*(lambda[k]^3) + 0.02089* (lambda[k]^4) - 0.003054 * (lambda[k] ^5) + 2.957*(10^-4)*(lambda[k]^6) - 1.8462*(10^-5)*(lambda[k]^7) + (7.1553*(10^-7))*(lambda[k]^8)-1.5631*(10^-8)*(lambda[k]^9)+1.4656*(10^-10)*(lambda[k]^10))
 elseif (annex2c_tmin_category == "Spherical Shell")
-    Mt[k] = (1.0005 + 0.49001*lambda[k] + 0.32409*(lambda[k])^2) / (1.0 + 0.50144*(lambda[k]) - 0.011067*(lambda[k])^2) # spheres
+    global Mt[k] = (1.0005 + 0.49001*lambda[k] + 0.32409*(lambda[k])^2) / (1.0 + 0.50144*(lambda[k]) - 0.011067*(lambda[k])^2) # spheres
     end
 end
 
@@ -669,24 +669,24 @@ end
 subset_out = hcat(subset_out,Ai_o,lambda,Mt)
 
 # remaining strength factor RSF
-RSF = zeros(size(subset_out,1))
+global RSF = zeros(size(subset_out,1))
 k=1
     for k in 1:size(subset_out,1)
-    RSF[k] = (1.0-(A_i[k]/Ai_o[k])) / (1.0- 1.0 / Mt[k]*(A_i[k]/Ai_o[k]))
+    global RSF[k] = (1.0-(A_i[k]/Ai_o[k])) / (1.0- 1.0 / Mt[k]*(A_i[k]/Ai_o[k]))
 end
 
 subset_out = hcat(subset_out,RSF)
 
-RSFi[i] = minimum(RSF)
+global RSFi[i] = minimum(RSF)
 elseif any(subset_1_starting .== 0.0) 1
-    RSFi[i] = 1.0
+    global RSFi[i] = 1.0
 end
 
 end # end loop
 
-RSF = minimum(RSFi)
+global RSF = minimum(RSFi)
 
-MAWPr = MAWP*(RSF/RSFa)
+global MAWPr = MAWP*(RSF/RSFa)
 
 if (RSF >= RSFa)
     MAWPr = MAWP # (eq (2.3))
@@ -738,5 +738,11 @@ elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category !=
     print("The assessment is complete for all component types\n")
 end
 
-end # end function
+labels = ["tc", "tm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+global part_5_level_2_calculated_parameters = [tc, tmm, Rt, lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
+out = hcat(labels,part_5_level_2_calculated_parameters)
+return out
+elseif (step6_satisfied == 0)
+    print("Step 7 onwards Not Conducted Step 6 not satisfied")
+end
 end

@@ -1,5 +1,5 @@
 # Sensitivty Analysis
-random_set = collect(.200:.005:.300)
+random_set = collect(.100:.005:.300)
 rand(random_set)
 final_MAWP_out = zeros(10000)
 
@@ -72,6 +72,7 @@ if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessme
     part_5_lta_output = Part5LTALevel2(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
+    part_5_lta_output
     final_MAWP_out[i] = part_5_lta_output[10,2]
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
@@ -81,8 +82,6 @@ elseif (part5_applicability[1] == 0 && lmsd_satisfied == 1)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
 end
 end # end random for loop
-
-@doc Part5LTALevel2
 
 #output
 using DataFrames
