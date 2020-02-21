@@ -9,7 +9,7 @@
  add https://github.com/flare9x/FitnessForService.jl
  ```
 
-## API 579 Part 5 – Assessment of Local Metal Loss - Level 1 Assessment
+## API 579 Part 5 – Assessment of Local Metal Loss - Level 1 & 2 Assessment
 
 API 579 have specific conditions that must be met which determine the applicability of the level 1,2 or 3 assessment. Limitations of the assessments include:
 *   The flaw is a LTA per API 579 or Groove-like-flaw
@@ -167,6 +167,32 @@ Component is acceptable for operating at the equipment design pressure or equipm
 Part 5 level 1 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 1 assessment
 The assessment is complete for all component types
  ```
+The level 2 assessment is a more specific method of assessing and characterizing the corroded profile. As stated in API 579 paragraph 5.4.3.1: 
+ 
+"These procedures account for the local reinforcement effects of the varying wall thickness in the region of the local metal loss and ensure that the weakest ligament is identified and properly evaluated."
+
+The API 579 methodology utilizes a numerical integration technique (Simpsons Rule or Trapezoidal Rule) to evalaute the the area of metal loss within the corroded profile. This code uses the Trapezoidal Rule being that the sub-intervals of the corroded profile are not in equal intervals (for simplicity vs simpsons rule). 
+
+ The Part 5 Level 2 assessment output example:
+ 
+    ```julia
+Begin -- Level 2 Assessment - API 579 June 2016 Edition
+eq 5.7 is Satisfied
+eq 5.10 is Satisfied
+eq 5.9 is Satisfied
+The criteria for level 1 and 2 assessment has been satisfied - proceed to STEP 6
+LTA - Proceed to STEP 7
+Piping MAWPc = 3680.982psi
+Piping MAWPl = 7947.02psi
+Final MAWP = 3680.982psi
+Region of metal loss is acceptable at MAWPr 3008.189psi
+Component is acceptable for operating at the equipment design pressure or equipment MAWP
+Part 5 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 2 assessment
+The component is a cylindrical shell, conical shell, or elbow
+ Begin -- evaluate the circumferential extent
+eq 5.13 satisfied - no further evaluation is required
+ ```
+ 
 
 ## Unit Test Summary
 
