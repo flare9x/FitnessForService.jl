@@ -40,9 +40,6 @@ function CreepRangeTemperature(x::String; design_temperature::Float64, units::St
 end # let end
 end
 
-a = [ "a", "b", "c", "d" ]
-findfirst(isequal("c"), a)
-
 # Application Construction Codes
 @doc """
     DesignCodeCriteria(x::String)::Int64
@@ -582,4 +579,24 @@ function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::
         level_3_satisfied = 0
     end # end level 3 applicability check
     return assessment_applicability = [level_1_satisfied, level_2_satisfied, level_3_satisfied]
+end
+
+# PArt 4 Applicability
+@doc """
+    Smoothness(x::String)::Int64
+
+    The region of metal loss has relatively smooth contours without notches, i.e. negligible local stress
+    concentrations.
+
+Select either: "Smooth Countour", "Has Notches"
+
+PArt 4 General Metal Loss
+""" ->
+function Smoothness(x::String)::Int64
+    @assert any(x .== ["Smooth Contour", "Has Notches"]) == 1 "Must be 'Smooth Contour' or 'Has Notches'"
+if x == "Smooth Contour"
+    return 1
+else
+    return 0
+end
 end
