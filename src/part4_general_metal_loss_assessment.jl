@@ -39,8 +39,10 @@ step_1 = COV_var(x)
 # profiles should be considered for the assessment (see paragraph 4.4.2.2).
 if step_1[2] <= 0.1
     print("COV is <= 0.1 - Procced to Step 3 to complete the assessment using the average thickness Tam - COV = ", round(step_1[2],digits =2))
+    step3_satisfied = 1
 else
     print("COV is > 0.1 - Thickness Profiles should be conisdered for assessment :: (see paragraph 4.4.2.2) - COV = ", round(step_1[2],digits =2))
+    step3_satisfied = 0
 end
 
 # STEP 3 – The acceptability of the component for continued operation can be established using the Level 1
@@ -48,3 +50,50 @@ end
 # MAWP acceptance criterion may be used. In either case, the minimum thickness criterion shall be
 # satisfied. For MAWP acceptance criterion (see Part 2, paragraph 2.4.2.2.e) to determine the
 # acceptability of the equipment for continued operation
+if (step3_satisfied == 1) # begin
+    if (annex2c_tmin_category == "Cylindrical Shell")
+        #tmin here
+    elseif (annex2c_tmin_category == "Spherical Shell")
+        #tmin here
+    elseif (annex2c_tmin_category == "Hemispherical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Elliptical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Torispherical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Conical Shell")
+        #tmin here
+    elseif (annex2c_tmin_category == "Toriconical Head")
+        #tmin here
+    elseif (annex2c_tmin_category == "Conical Transition")
+        #tmin here
+    elseif (annex2c_tmin_category == "Nozzles Connections in Shells")
+        #tmin here
+    elseif (annex2c_tmin_category == "Junction Reinforcement Requirements at Conical Transitions")
+        #tmin here
+    elseif (annex2c_tmin_category == "Tubesheets")
+        #tmin here
+    elseif (annex2c_tmin_category == "Flat head to cylinder connections")
+        #tmin here
+    elseif (annex2c_tmin_category == "Bolted Flanges")
+        #tmin here
+    elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
+        MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
+        print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
+        MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
+        print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
+        MAWP = minimum([MAWPc,MAWPl])
+        print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
+    elseif (annex2c_tmin_category == "Boiler Tubes")
+        #tmin here
+    elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
+        #tmin here
+    elseif (annex2c_tmin_category == "MAWP for External Pressure")
+        #tmin here
+    elseif (annex2c_tmin_category == "Branch Connections")
+        #tmin here
+    elseif (annex2c_tmin_category == "API 650 Storage Tanks")
+        #tmin here
+    end # end equations
+
+    
