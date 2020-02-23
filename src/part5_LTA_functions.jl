@@ -129,7 +129,7 @@ end # function end
     FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
     LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
     Do = 3.5 # Outside Diameter\n
-    D =  # inside diameter of the shell corrected for FCAml , as applicable\n
+    D = Do - 2*(tnom)  # inside diameter of the shell corrected for FCAml , as applicable\n
     P = 1480 # internal design pressure.\n
     S = 20000 # allowable stress.\n
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
@@ -147,7 +147,7 @@ end # function end
 """->
 function Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
-    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
+    tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]) "Invalid entry must be any of the following tmin groups: 'Cylindrical Shell','Spherical Shell','Hemispherical Head','Elliptical Head','Torispherical Head','Conical Shell','Toriconical Head','Conical Transition','Nozzles Connections in Shells',
@@ -417,7 +417,7 @@ end # function end
     FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
     LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
     Do = 3.5 # Outside Diameter\n
-    D =  # inside diameter of the shell corrected for FCAml , as applicable\n
+    D = Do - 2*(tnom)  # inside diameter of the shell corrected for FCAml , as applicable\n
     P = 1480 # internal design pressure.\n
     S = 20000 # allowable stress.\n
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
@@ -435,7 +435,7 @@ end # function end
 """->
 function Part5LTALevel2(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
-    tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
+    tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]) "Invalid entry must be any of the following tmin groups: 'Cylindrical Shell','Spherical Shell','Hemispherical Head','Elliptical Head','Torispherical Head','Conical Shell','Toriconical Head','Conical Transition','Nozzles Connections in Shells',

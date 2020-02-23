@@ -26,74 +26,33 @@ else
     lmsd_satisfied = 0
 end
 
-# STEP 1 – Take the point thickness reading data in accordance with paragraph 4.3.3 Tam , and the
-# Coefficient Of Variation (COV). A template for computing the COV is provided in Table 4.3.
-# Tam = average measured wall thickness of the component based on the point thickness readings (PTR) measured at the time of the inspection.
-# COV = Coefficient Of Variation.
-# Trd = Thickness reading within corroded
+# level 1 data
 x = [13.0,12.0,11.0,13.0,10.0,12.0,11.0,12.0,13.0,13.0,11.0,12.0,12.0,13.0,13.0]
-step_1 = COV_var(x)
+x = [0.300, 0.300, 0.300, 0.3, 0.300, 0.275, 0.275, 0.275, 0.275, 0.275, 0.275, 0.240, 0.250, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 
-# STEP 2 – If the COV from STEP 1 is less than or equal to 0.1, then proceed to STEP 3 to complete the
-# assessment using the average thickness, tam . If the COV is greater than 0.1 then the use of thickness
-# profiles should be considered for the assessment (see paragraph 4.4.2.2).
-if step_1[2] <= 0.1
-    print("COV is <= 0.1 - Procced to Step 3 to complete the assessment using the average thickness Tam - COV = ", round(step_1[2],digits =2))
-    step3_satisfied = 1
-else
-    print("COV is > 0.1 - Thickness Profiles should be conisdered for assessment :: (see paragraph 4.4.2.2) - COV = ", round(step_1[2],digits =2))
-    step3_satisfied = 0
-end
+test = COV_var(x)
+cov_test = test[2]
 
-# STEP 3 – The acceptability of the component for continued operation can be established using the Level 1
-# criteria in Table 4.4, Table 4.5, Table 4.6, and Table 4.7. The averaged measured thickness or
-# MAWP acceptance criterion may be used. In either case, the minimum thickness criterion shall be
-# satisfied. For MAWP acceptance criterion (see Part 2, paragraph 2.4.2.2.e) to determine the
-# acceptability of the equipment for continued operation
-if (step3_satisfied == 1) # begin
-    if (annex2c_tmin_category == "Cylindrical Shell")
-        #tmin here
-    elseif (annex2c_tmin_category == "Spherical Shell")
-        #tmin here
-    elseif (annex2c_tmin_category == "Hemispherical Head")
-        #tmin here
-    elseif (annex2c_tmin_category == "Elliptical Head")
-        #tmin here
-    elseif (annex2c_tmin_category == "Torispherical Head")
-        #tmin here
-    elseif (annex2c_tmin_category == "Conical Shell")
-        #tmin here
-    elseif (annex2c_tmin_category == "Toriconical Head")
-        #tmin here
-    elseif (annex2c_tmin_category == "Conical Transition")
-        #tmin here
-    elseif (annex2c_tmin_category == "Nozzles Connections in Shells")
-        #tmin here
-    elseif (annex2c_tmin_category == "Junction Reinforcement Requirements at Conical Transitions")
-        #tmin here
-    elseif (annex2c_tmin_category == "Tubesheets")
-        #tmin here
-    elseif (annex2c_tmin_category == "Flat head to cylinder connections")
-        #tmin here
-    elseif (annex2c_tmin_category == "Bolted Flanges")
-        #tmin here
-    elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
-        MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
-        print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
-        MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
-        print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
-        MAWP = minimum([MAWPc,MAWPl])
-        print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
-    elseif (annex2c_tmin_category == "Boiler Tubes")
-        #tmin here
-    elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
-        #tmin here
-    elseif (annex2c_tmin_category == "MAWP for External Pressure")
-        #tmin here
-    elseif (annex2c_tmin_category == "Branch Connections")
-        #tmin here
-    elseif (annex2c_tmin_category == "API 650 Storage Tanks")
-        #tmin here
-    end # end equations
+equipment_group = "piping" # "vessel", "tank"\n
+annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
+# "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
+# "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]\n
+flaw_location = "external" # "External","Internal"\n
+units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"\n
+tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.\n
+FCAml = 0.0 # Future Corrosion Allowance applied to the region of metal loss.\n
+FCA = .0 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
+LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
+Do = 3.5 # Outside Diameter\n
+D = Do - 2*(tnom)  # inside diameter of the shell corrected for FCAml , as applicable\n
+P = 1480.0 # internal design pressure.\n
+S = 20000.0 # allowable stress.\n
+E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
+MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
+Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .\n
+t = tnom - LOSS - FCA  # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.\n
+tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).\n
 
-    
+
+part4_PTR_Level_1_Assessment(x; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group,flaw_location=flaw_location,units=units,tnom=tnom,
+    FCAml=FCAml,Do=Do,D=D,P=P,S=S,E=E,MA=MA,Yb31=Yb31,tsl=tsl,t=t)
