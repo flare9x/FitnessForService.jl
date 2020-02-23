@@ -143,9 +143,9 @@ function part4_PTR_Level_1_Assessment(x::Array{Float64}; annex2c_tmin_category::
             print("Determine MAWPcr using (tam - FCAml) - Adjust the average thickness (tam) within corroded by future CA applied to the region of corrosion - What is MAWP within corroded whilst maintaining CA as applicable\n")
             t_adj = (tam - FCAml)
             MAWPcr = PipingMAWPc(S, E=E, t=t_adj, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
-            print("Piping MAWPcr = ",round(MAWPcr, digits=3),"psi\n")
+            print("Piping Within Corroded MAWPcr = ",round(MAWPcr, digits=3),"psi\n")
             MAWPlr = PipingMAWPl(S; E=E, t=t_adj, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
-            print("Piping MAWPlr = ",round(MAWPlr, digits=3),"psi\n")
+            print("Piping Within Corroded MAWPlr = ",round(MAWPlr, digits=3),"psi\n")
             if (MAWPcr >= P)
                 print("MAWP from Point Thickness Readings (PTR) - Level 1 assessment has been satisfied :: (MAWPcr >= P) == True\n")
             else
