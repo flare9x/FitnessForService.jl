@@ -40,7 +40,7 @@ function Pipingtcmin(P::Float64, Do::Float64=0.0, S::Float64=0.0, E::Float64=0.0
     tcmin = ((P*Do) / (2*((S*E) + (P*Yb31)))) + MA # (2C.146)
     return tcmin
 end
-Pipingtcmin(P=11.0; Do=4.5, S=20.0, E=1.0, Yb31=.41, MA=MA)
+
 
 @doc """
     PipingMAWPc(S::Float64; E::Float64=0.0, t::Float64=0.0, MA::Float64=0.0, Do::Float64=0.0, Yb31::Float64=0.0)
