@@ -92,7 +92,7 @@ gw = width of the Groove-Like Flaw based on future corroded condition.\n
 β = orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable\n
     For grooves located on cylinders and cones orientated at an angle to the longitudinal axis (Figure 5.4) - eq (5.1) and eq (5.2) may be used to determine the s and c parameters\n
  """
- function sc(metal_loss_categorization::String; annex2c_tmin_category::String, β::Float64, gl::Float64, gw::Float64)::Array{Float64}
+ function sc(metal_loss_categorization::String; annex2c_tmin_category::String, s::Float64, c::Float64, β::Float64, gl::Float64, gw::Float64)::Array{Float64}
      let s = s, c = c
      @assert (β >=0.0) && (β <=90.0) "Invalid input : Please enter a value between 0 and 90 degrees - see API 579 2016 figure 5"
      if (metal_loss_categorization == "LTA")
@@ -191,7 +191,7 @@ tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for L
 # s and c
 # User define for LTA and Groove-Like flaw
 # For cylinders and cones - if the groove is orientated at an angle to the longitudinal axis, then the groove-like flaw profile can be projected on to the longitudinal and circumferential planes using the following equations to establish the equivalent LTA dimensions
-out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,β=β,gl=gl,gw=gw)
+out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,s=s,c=c,β=β,gl=gl,gw=gw)
 s = out[1]
 c = out[2]
 tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
