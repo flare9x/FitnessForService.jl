@@ -15,7 +15,7 @@ x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structura
 part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic,creep_range)
 
 # VF-3125 :: area 1
-M1 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+#=M1 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
 M2 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
 M3 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
 M4 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
@@ -30,9 +30,10 @@ M12 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
 M13 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
 CTPGrid = hcat(M13,M12,M11,M10,M9,M8,M7,M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+=#
 
 # VF-3125 :: area 2
-M1 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237	,0.237]
+#=M1 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237	,0.237]
 M2 = [0.237,	0.237	,0.237,	0.237,	0.237,	0.237,	0.237]
 M3 = [0.237,	0.237,	0.197,	0.072,	0.187,	0.237,	0.237]
 M4 = [0.237,	0.237,	0.197,	0.077,	0.137,	0.237,	0.237]
@@ -40,6 +41,7 @@ M5 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
 M6 = [0.237,	0.237,	0.237,	0.237,	0.237	,0.237	,0.237]
 CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+=#
 
 
 # For all assessments - determine the inspection data grid
@@ -110,6 +112,7 @@ if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessme
     part_5_lta_output = Part5LTALevel1(annex2c_tmin_category; equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
+    part_5_lta_output
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
 elseif (part5_applicability[1] == 1 && lmsd_satisfied == 0)

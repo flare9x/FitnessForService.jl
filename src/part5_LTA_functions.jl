@@ -125,24 +125,30 @@ end # function end
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"\n
     tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.\n
     trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.\n
-    FCAml = .05 # Future Corrosion Allowance applied to the region of metal loss.\n
-    FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
-    LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
+    FCAml = .00 # Future Corrosion Allowance applied to the region of metal loss.\n
+    FCA = .00 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
+    LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
     Do = 3.5 # Outside Diameter\n
     D = Do - 2*(tnom)  # inside diameter of the shell corrected for FCAml , as applicable\n
     P = 1480 # internal design pressure.\n
     S = 20000 # allowable stress.\n
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
-    MA = 0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
+    MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .\n
     t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.\n
-    tsl = 0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).\n
+    tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).\n
     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion\n
     # Flaw dimensions\n
     s = 5.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,\n
     c = 1.5 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .\n
-    Ec = 1.0 circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
-    El = 1.0 longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9\n
+    # Groove Like Flaw dimensions\n
+    gl = .05 # length of the Groove-Like Flaw based on future corroded condition.\n
+    gw = .4 # width of the Groove-Like Flaw based on future corroded condition.\n
+    gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.\n
+    β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
 function Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
@@ -162,7 +168,7 @@ print("Begin -- Level 1 Assessment - API 579 June 2016 Edition\n")
 # Adjust the FCA by internal and external as below
 FCA_string = "internal"  # "External","Internal"
 if (FCA_string == "internal")
-Dml = D + (2*FCAml) # inside diameter of the shell corrected for ml FCA , as applicable.
+Dml = D + (2*FCAml) # inside diameter of the shell corrected for FCAml , as applicable.
 elseif (FCA_string == "external")
     Dml = D # inside diameter of the shell corrected for FCAml , as applicable.
 end
@@ -179,7 +185,7 @@ c2 = (c * 2) / spacings # minimum inspection boundary - circumferential  directi
 
 # STEP 2 – Determine the wall thickness to be used in the assessment using Equation (5.3) or Equation (5.4), as applicable.
 tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.3)
-tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
+#tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
 
 # STEP 3 – Determine the minimum measured thickness in the LTA, tmm , and the flaw dimensions, s and c (see paragraph 5.3.3.2.b) for the CTP.
 # s and c
@@ -413,24 +419,30 @@ end # function end
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"\n
     tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.\n
     trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.\n
-    FCAml = .05 # Future Corrosion Allowance applied to the region of metal loss.\n
-    FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
-    LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
+    FCAml = .00 # Future Corrosion Allowance applied to the region of metal loss.\n
+    FCA = .00 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).\n
+    LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.\n
     Do = 3.5 # Outside Diameter\n
     D = Do - 2*(tnom)  # inside diameter of the shell corrected for FCAml , as applicable\n
     P = 1480 # internal design pressure.\n
     S = 20000 # allowable stress.\n
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
-    MA = 0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
+    MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .\n
     t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.\n
-    tsl = 0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).\n
+    tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).\n
     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion\n
     # Flaw dimensions\n
     s = 5.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,\n
     c = 1.5 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .\n
-    Ec = 1.0 circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
-    El = 1.0 longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency\n
+    RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9\n
+    # Groove Like Flaw dimensions\n
+    gl = .05 # length of the Groove-Like Flaw based on future corroded condition.\n
+    gw = .4 # width of the Groove-Like Flaw based on future corroded condition.\n
+    gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.\n
+    β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
 function Part5LTALevel2(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,

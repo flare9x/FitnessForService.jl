@@ -242,10 +242,8 @@ end
 @testset "part5_LTA_functions.jl" begin
     @testset "Non Groove Part 5 LTA Level 1 Assessment" begin
         part_5_lta_level_1_known_correct_output = [.3,.1,0.333,8.266,3680.982,7947.020,3680.982,4.617,0.390,1593.429,1480.0]
-        part_5_lta_level_1_output = Part5LTALevel1("Straight Pipes Subject To Internal Pressure"; equipment_group="piping", flaw_location="external", metal_loss_categorization="LTA", units="lbs-in-psi", tnom=.3,
-                trd=.3, FCA=0.0, FCAml=0.0, LOSS=0.0, Do=3.5, D=2.9, P=1480.0, S=20000.0, E=1.0, MA=0.0, Yb31=0.4, tsl=0.0, t=.3, spacings=0.5, s=6.0, c=2.0, El=1.0, Ec=1.0, RSFa=0.9,gl=0.0, gw=0.0, gr=0.0, β=0.0)
-
-
+        part_5_lta_level_1_output = Part5LTALevel1("Straight Pipes Subject To Internal Pressure"; equipment_group="piping",flaw_location="external",metal_loss_categorization="LTA",units="lbs-in-psi",tnom=.3,
+                    trd=.3,FCA=0.0,FCAml=0.00,LOSS=0.0,Do=3.5,D=2.9,P=1480.0,S=20000.0,E=1.0,MA=0.0,Yb31=0.4, tsl=0.0, t=.3, spacings=0.5,s=6.0,c=2.0,El=1.0,Ec=1.0, RSFa=0.9, gl=0.0, gw=0.0, gr=0.0, β=0.0)
         @test part_5_lta_level_1_known_correct_output[1] == part_5_lta_level_1_output[1,2] # tmm check
         @test part_5_lta_level_1_known_correct_output[2] == part_5_lta_level_1_output[2,2] # tm check
         @test part_5_lta_level_1_known_correct_output[3] == round(part_5_lta_level_1_output[3,2], digits =3) # Rt check
