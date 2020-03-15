@@ -90,63 +90,78 @@ The function consists of the relevant input variables that are needed to perform
 
    ```julia
  @doc Part5LTALevel1
-     Part5LTALevel1(x::Array{Int64};equipmentgroup::String="",flawlocation::String="",metallosscategorization::String="",units::String="",tnom::Float64=0.0,
-     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,Do::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
-     tsl::Float64=0.0,spacings::Float64=0.0,L1msd::Float64=0.0,L2msd::Float64=0.0,L3msd::Float64=0.0,L4msd::Float64=0.0,L5msd::Float64=0.0,s::Float64=0.0,c::Float64=0.0)
+       Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",tnom::Float64=0.0,
+  trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
+  tsl::Float64=0.0,spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
 
-     Variables
-
-     equipment_group = "piping" # "vessel", "tank"
-
-     annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
-     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
-     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
-
-     flaw_location = "external" # "External","Internal"
-
-     metal_loss_categorization = "groove" # "LTA" or "groove"
-
-     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
-
-     tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-
-     trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-
-     FCAml = .05 # Future Corrosion Allowance applied to the region of metal loss.
-
-     FCA = .05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
-
-     LOSS = 0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
-
-     Do = 3.5 # Outside Diameter
-
-     D =  # inside diameter of the shell corrected for FCAml , as applicable
-
-     P = 1480 # internal design pressure.
-
-     S = 20000 # allowable stress.
-
-     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
-
-     MA = 0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
-
-     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .
-
-     t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.
-
-     tsl = 0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).
-
-     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion
-
-     # Flaw dimensions
-
-     s = 5.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
-
-     c = 1.5 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
-
-     Ec = 1.0 circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
-
-     El = 1.0 longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
+  Variables
+  
+  equipment_group = "piping" # "vessel", "tank"
+  
+  annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical
+Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
+  # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
+  # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
+  
+  flaw_location = "external" # "External","Internal"
+  
+  metal_loss_categorization = "Groove-Like Flaw" # "LTA" or "Groove-Like Flaw"
+  
+  units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
+  
+  tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+  
+  trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+  
+  FCAml = .00 # Future Corrosion Allowance applied to the region of metal loss.
+  
+  FCA = .00 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+  
+  LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
+  
+  Do = 3.5 # Outside Diameter
+  
+  D = Do - 2*(tnom)  # inside diameter of the shell corrected for FCAml , as applicable
+  
+  P = 1480 # internal design pressure.
+  
+  S = 20000 # allowable stress.
+  
+  E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
+  
+  MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
+  
+  Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .
+  
+  t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.
+  
+  tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).
+  
+  spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion
+  
+  # Flaw dimensions
+  
+  s = 5.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
+  
+  c = 1.5 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
+  
+  Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
+  
+  El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament
+Efficiency
+  
+  RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9
+  
+  # Groove Like Flaw dimensions
+  
+  gl = .05 # length of the Groove-Like Flaw based on future corroded condition.
+  
+  gw = .4 # width of the Groove-Like Flaw based on future corroded condition.
+  
+  gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.
+  
+  β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective
+fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.
  ```
 
 The Part 5 Level 1 assessment output example:
