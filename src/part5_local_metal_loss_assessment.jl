@@ -14,6 +14,34 @@ cyclic = CyclicService(100, "Meets Part 14")
 x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
 part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic,creep_range)
 
+# VF-3125 :: area 1
+M1 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M2 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M3 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M4 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M5 = [0.237,	0.237,	0.237,	0.237,	0.127,	0.197,	0.237,	0.237,	0.237]
+M6 = [0.237,	0.237,	0.237,	0.237,	0.127,	0.167,	0.237,	0.237,	0.237]
+M7 = [0.237,	0.237,	0.237,	0.117,	0.137,	0.167,	0.237,	0.237,	0.237]
+M8 = [0.237,	0.237,	0.237,	0.077,	0.102,	0.167,	0.237,	0.237,	0.237]
+M9 = [0.237,	0.237,	0.237,	0.097,	0.087,	0.182,	0.237,	0.237,	0.237]
+M10 = [0.237,	0.237,	0.237,	0.167,	0.157,	0.167,	0.237,	0.237,	0.237]
+M11 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M12 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M13 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+CTPGrid = hcat(M13,M12,M11,M10,M9,M8,M7,M6,M5,M4,M3,M2,M1) # build in descending order
+CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+
+# VF-3125 :: area 2
+M1 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237	,0.237]
+M2 = [0.237,	0.237	,0.237,	0.237,	0.237,	0.237,	0.237]
+M3 = [0.237,	0.237,	0.197,	0.072,	0.187,	0.237,	0.237]
+M4 = [0.237,	0.237,	0.197,	0.077,	0.137,	0.237,	0.237]
+M5 = [0.237,	0.237,	0.237,	0.237,	0.237,	0.237,	0.237]
+M6 = [0.237,	0.237,	0.237,	0.237,	0.237	,0.237	,0.237]
+CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
+CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+
+
 # For all assessments - determine the inspection data grid
 M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, 0.220, 0.280, 0.250, 0.240, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
@@ -32,14 +60,14 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     flaw_location = "external" # "External","Internal"
     metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
-    tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-    trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-    FCAml = 0.0 # Future Corrosion Allowance applied to the region of metal loss.
+    tnom = .237 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+    trd = .237 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+    FCAml = 0.00 # Future Corrosion Allowance applied to the region of metal loss.
     FCA = 0.0 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
     LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
-    Do = 3.5 # Outside Diameter
-    D = Do - 2*(tnom)
-    P = 1480.0 # internal design pressure.
+    Do = 4.5 # Outside Diameter
+    D = Do - 2*(tnom) # Inside Dia.
+    P = 740.0 # internal design pressure.
     S = 20000.0 # allowable stress.
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
@@ -48,8 +76,8 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).
     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion -----------+ may add to CTP_Grid function for plotting purposes
     # Flaw dimensions
-    s = 6.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
-    c = 2.0 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
+    s = 1.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
+    c = 1.0 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
     Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
     El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
     RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9
