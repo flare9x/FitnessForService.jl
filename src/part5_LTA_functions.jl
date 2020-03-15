@@ -485,7 +485,7 @@ tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and
 # s and c
 # User define for LTA and Groove-Like flaw
 # For cylinders and cones - if the groove is orientated at an angle to the longitudinal axis, then the groove-like flaw profile can be projected on to the longitudinal and circumferential planes using the following equations to establish the equivalent LTA dimensions
-out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,β=β,gl=gl,gw=gw)
+out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,s=s,c=c,β=β,gl=gl,gw=gw)
 s = out[1]
 c = out[2]
 tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
