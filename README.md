@@ -171,7 +171,7 @@ The level 2 assessment is a more specific method of assessing and characterizing
  
 "These procedures account for the local reinforcement effects of the varying wall thickness in the region of the local metal loss and ensure that the weakest ligament is identified and properly evaluated."
 
-The API 579 methodology utilizes a numerical integration technique (Simpsons Rule or Trapezoidal Rule) to evalaute the the area of metal loss within the corroded profile. This code uses the Trapezoidal Rule being that the sub-intervals of the corroded profile are not in equal intervals (for simplicity vs simpsons rule). 
+The API 579 methodology utilizes a numerical integration technique (Simpsons Rule or Trapezoidal Rule) to evalaute the the area of metal loss within the corroded profile. This julia code uses the Trapezoidal Rule being that the sub-intervals of the corroded profile are not in equal intervals (for simplicity vs simpsons rule). 
 
  The Part 5 Level 2 assessment output example:
  
