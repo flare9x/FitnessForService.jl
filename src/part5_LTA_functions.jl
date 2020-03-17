@@ -258,6 +258,7 @@ if (step6_satisfied == 1) # begin step 7 onwards
         MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
         print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
         MAWP = minimum([MAWPc,MAWPl])
+        #MAWP = S * log((Do- 2*Co)/(Do-2*(.750-0.0)))
         print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
     elseif (annex2c_tmin_category == "Boiler Tubes")
         #tmin here
@@ -386,7 +387,7 @@ end # end step 9.4
 elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category != "Conical Shell" || annex2c_tmin_category != "Pipe Bends Subject To Internal Pressure")
     print("The assessment is complete for all component types\n")
 end
-labels = ["tc", "tm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+labels = ["tc", "tmm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
 part_5_level_1_calculated_parameters = [tc, tmm, Rt, lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
 out = hcat(labels,part_5_level_1_calculated_parameters)
 return out
@@ -479,7 +480,7 @@ c2 = (c * 2) / spacings # minimum inspection boundary - circumferential  directi
 
 # STEP 2 – Determine the wall thickness to be used in the assessment using Equation (5.3) or Equation (5.4), as applicable.
 tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.3)
-tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
+#tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
 
 # STEP 3 – Determine the minimum measured thickness in the LTA, tmm , and the flaw dimensions, s and c (see paragraph 5.3.3.2.b) for the CTP.
 # s and c

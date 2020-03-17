@@ -43,6 +43,35 @@ CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 =#
 
+M1 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M2 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M3 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M4 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M5 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M6 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M7 = [0.750,0.750,0.750,0.750,0.750,0.750,0.710,0.720,0.710,0.720,0.750,0.750,0.750,0.750]
+M8 = [0.750,0.750,0.750,0.750,0.750,0.720,0.700,0.680,0.680,0.700,0.750,0.750,0.750,0.750]
+M9 = [0.750,0.750,0.750,0.750,0.750,0.650,0.680,0.630,0.640,0.700,0.750,0.750,0.750,0.750]
+M10 = [0.750,0.750,0.750,0.750,0.750,0.730,0.690,0.630,0.650,0.680,0.750,0.750,0.750,0.750]
+M11 = [0.750,0.750,0.750,0.750,0.750,0.720,0.660,0.610,0.590,0.730,0.750,0.750,0.750,0.750]
+M12 = [0.750,0.750,0.750,0.750,0.690,0.720,0.670,0.600,0.565,0.700,0.750,0.750,0.750,0.750]
+M13 = [0.750,0.750,0.750,0.750,0.610,0.600,0.590,0.690,0.640,0.750,0.750,0.750,0.750,0.750]
+M14 = [0.750,0.750,0.750,0.750,0.670,0.640,0.580,0.605,0.655,0.750,0.750,0.750,0.750,0.750]
+M15 = [0.750,0.750,0.750,0.700,0.675,0.625,0.575,0.710,0.680,0.750,0.750,0.750,0.750,0.750]
+M16 = [0.750,0.750,0.750,0.675,0.750,0.620,0.720,0.730,0.740,0.750,0.750,0.750,0.750,0.750]
+M17 = [0.750,0.750,0.750,0.700,0.690,0.590,0.670,0.710,0.715,0.750,0.750,0.750,0.750,0.750]
+M18 = [0.750,0.750,0.750,0.750,0.655,0.690,0.675,0.730,0.710,0.750,0.750,0.750,0.750,0.750]
+M19 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M20 = [0.750,0.750,0.750,0.750,0.730,0.750,0.750,0.750,0.720,0.750,0.750,0.750,0.750,0.750]
+M21 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M22 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M23 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M24 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.272,0.750,0.750,0.750,0.750,0.750,0.750]
+M25 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+M26 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750]
+CTPGrid = hcat(M26,M25,M24,M23,M22,M21,M20,M19,M18,M17,M16,M15,M14,M13,M12,M11,M10,M9,M8,M7,M6,M5,M4,M3,M2,M1) # build in descending order
+CTPGrid = rotl90(CTPGrid) #
+
 
 # For all assessments - determine the inspection data grid
 M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
@@ -62,14 +91,14 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     flaw_location = "external" # "External","Internal"
     metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
-    tnom = .237 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-    trd = .237 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-    FCAml = 0.00 # Future Corrosion Allowance applied to the region of metal loss.
+    tnom = .300 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+    trd = .300 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+    FCAml = 0.075 # Future Corrosion Allowance applied to the region of metal loss.
     FCA = 0.0 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
     LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
-    Do = 4.5 # Outside Diameter
+    Do = 3.5 # Outside Diameter
     D = Do - 2*(tnom) # Inside Dia.
-    P = 740.0 # internal design pressure.
+    P = 2220.0 # internal design pressure.
     S = 20000.0 # allowable stress.
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
@@ -78,8 +107,8 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).
     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion -----------+ may add to CTP_Grid function for plotting purposes
     # Flaw dimensions
-    s = 1.5 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
-    c = 1.0 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
+    s = 6.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
+    c = 2.0 # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
     Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
     El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
     RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9
@@ -113,6 +142,7 @@ if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessme
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
     part_5_lta_output
+
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
 elseif (part5_applicability[1] == 1 && lmsd_satisfied == 0)
