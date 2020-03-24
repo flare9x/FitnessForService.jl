@@ -197,7 +197,7 @@ c = out[2]
 tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
-Rt = (tmm-FCA) / tc # remaining thickness ratio. # (5.5)
+Rt = (tmm-FCAml) / tc # remaining thickness ratio. # (5.5)
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
@@ -253,9 +253,9 @@ if (step6_satisfied == 1) # begin step 7 onwards
     elseif (annex2c_tmin_category == "Bolted Flanges")
         #tmin here
     elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
-        MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
+        MAWPc = PipingMAWPc(S, E=E, t=tc, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
         print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
-        MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
+        MAWPl = PipingMAWPl(S; E=E, t=tc, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
         print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
         MAWP = minimum([MAWPc,MAWPl])
         #MAWP = S * log((Do- 2*Co)/(Do-2*(.750-0.0)))
@@ -337,6 +337,7 @@ end
 # flaw is acceptable for operation at the MAWP determined in STEP 7.
 
 RSF = Rt / (1-1/Mt*(1-Rt)) # eq (5.12)
+#RSF = 0.551 / (1-1/2.232*(1-0.551)) # eq (5.12)
 MAWPr = MAWP*(RSF/RSFa)
 
 if (RSF >= RSFa)
@@ -387,8 +388,8 @@ end # end step 9.4
 elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category != "Conical Shell" || annex2c_tmin_category != "Pipe Bends Subject To Internal Pressure")
     print("The assessment is complete for all component types\n")
 end
-labels = ["tc", "tmm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
-part_5_level_1_calculated_parameters = [tc, tmm, Rt, lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
+labels = ["Do","D","LOSS","FCA","FCAml","tc", "tmm", "Rt", "s","c","lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+part_5_level_1_calculated_parameters = [Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, s,c,lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
 out = hcat(labels,part_5_level_1_calculated_parameters)
 return out
 elseif (step6_satisfied == 0)
@@ -492,7 +493,7 @@ c = out[2]
 tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
-Rt = (tmm[1]-FCA) / tc # remaining thickness ratio. # (5.5)
+Rt = (tmm[1]-FCAml) / tc # remaining thickness ratio. # (5.5)
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
@@ -562,9 +563,9 @@ if (step6_satisfied == 1) # begin step 7 onwards
     elseif (annex2c_tmin_category == "Bolted Flanges")
         #tmin here
     elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
-        MAWPc = PipingMAWPc(S, E=E, t=t, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
+        MAWPc = PipingMAWPc(S, E=E, t=tc, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
         print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
-        MAWPl = PipingMAWPl(S; E=E, t=t, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
+        MAWPl = PipingMAWPl(S; E=E, t=tc, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
         print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
         MAWP = minimum([MAWPc,MAWPl])
         print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
@@ -751,8 +752,8 @@ elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category !=
     print("The assessment is complete for all component types\n")
 end
 
-labels = ["tc", "tm", "Rt", "lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
-global part_5_level_2_calculated_parameters = [tc, tmm, Rt, lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
+labels = ["Do","D","LOSS","FCA","FCAml","tc", "tmm", "Rt", "s","c","lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+global part_5_level_2_calculated_parameters = [Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, s,c,lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
 out = hcat(labels,part_5_level_2_calculated_parameters)
 return out
 elseif (step6_satisfied == 0)

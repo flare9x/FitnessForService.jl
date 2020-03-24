@@ -24,7 +24,7 @@ metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
 units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
 tnom = .3 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
 trd = .3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-FCAml = 0.0 # Future Corrosion Allowance applied to the region of metal loss.
+FCAml = 0.07 # Future Corrosion Allowance applied to the region of metal loss.
 FCA = 0.0 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
 LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
 Do = 3.5 # Outside Diameter
@@ -34,7 +34,7 @@ S = 20000.0 # allowable stress.
 E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
 MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
 Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .
-t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.
+t = trd - LOSS - FCAml # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.
 tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).
 spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion -----------+ may add to CTP_Grid function for plotting purposes
 # Flaw dimensions
