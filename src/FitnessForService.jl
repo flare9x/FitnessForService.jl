@@ -4,7 +4,7 @@ module FitnessForService
 
 export
 
-    Part5LTAFlawSizeLimitCriteria, Part5LTAFlawSizeLevel1Acceptance, sc, Part5LTALevel1, CreepRangeTemperature, DesignCodeCriteria, MaterialToughness, CyclicService, Part5ComponentType, Part5AsessmentApplicability
+    Part5LTAFlawSizeLimitCriteria, Part5LTAFlawSizeLevel1Acceptance, sc, CTP_Grid, Part5LTALevel1, CreepRangeTemperature, DesignCodeCriteria, MaterialToughness, CyclicService, Part5ComponentType, Part5AsessmentApplicability
 
     include("applicability.jl")
     include("part5_LTA_functions.jl")
