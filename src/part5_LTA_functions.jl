@@ -5,7 +5,7 @@
 
 Determine if the flaw is acceptable per level 1 criteria
     """ ->
-function Part5LTAFlawSizeLimitCriteria(equipment_group::String,units::String,Rt::Float64,D::Float64,tc::Float64,tmm::Float64,FCAml::Float64,Lmsd::Array{Float64,1})::Array{Int64}
+function Part5LTAFlawSizeLimitCriteria(equipment_group::String,units::String,Rt::Float64,D::Float64,tc::Float64,tmm::Float64,FCAml::Float64,Lmsd::Float64)::Array{Int64}
     let test_1 = 0, test_2 = 0, test_3 =.0, test_4 = 0
         @assert any(equipment_group .== ["piping","vessel","tank"]) "Invalid input - select either: 'piping' or 'vessel' or 'tank'"
 if (equipment_group == "piping" || equipment_group == "vessel" || equipment_group == "tank")
