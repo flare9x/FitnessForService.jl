@@ -255,8 +255,8 @@ end
         L3msd = [12.0] # distance to the nearest major structural discontinuity.
         L4msd = [12.0] # distance to the nearest major structural discontinuity.
         L5msd = [12.0] # distance to the nearest major structural discontinuity.
-        Lmsd = minimum([L1msd,L2msd,L3msd,L4msd,L5msd])
-        if (Lmsd[1] >= (1.8*(sqrt(D*(trd - LOSS - FCA)))))
+        Lmsd = minimum([L1msd,L2msd,L3msd,L4msd,L5msd])[1]
+        if (Lmsd >= (1.8*(sqrt(D*(trd - LOSS - FCA)))))
             print("Satisfied - Flaw is located far enough from structural discontinuity\n")
             lmsd_satisfied = 1
         else
