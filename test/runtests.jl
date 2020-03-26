@@ -241,6 +241,36 @@ end
 
 @testset "part5_LTA_functions.jl" begin
     @testset "Non Groove Part 5 LTA Level 1 Assessment" begin
+        # For all assessments determine far enough from structural discontinuity
+        # Flaw-To-Major Structural Discontinuity Spacing
+        tnom = .3
+        trd = 0.3 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+        FCAml = 0.05 # Future Corrosion Allowance applied to the region of metal loss.
+        FCA = 0.0 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+        LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
+        Do = 10.75 # Outside Diameter
+        D = Do - 2*(tnom) # Inside Dia.
+        L1msd = [12.0] # distance to the nearest major structural discontinuity.
+        L2msd = [12.0] # distance to the nearest major structural discontinuity.
+        L3msd = [12.0] # distance to the nearest major structural discontinuity.
+        L4msd = [12.0] # distance to the nearest major structural discontinuity.
+        L5msd = [12.0] # distance to the nearest major structural discontinuity.
+        Lmsd = minimum([L1msd,L2msd,L3msd,L4msd,L5msd])
+        if (Lmsd[1] >= (1.8*(sqrt(D*(trd - LOSS - FCA)))))
+            print("Satisfied - Flaw is located far enough from structural discontinuity\n")
+            lmsd_satisfied = 1
+        else
+            print("Not satisfied - Flaw is too close to a structural discontinuity - Conduct a level 3 assessment\n")
+            lmsd_satisfied = 0
+        end
+        M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+        M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, 0.220, 0.280, 0.250, 0.240, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+        M3 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.215, 0.255, 0.215, 0.145, 0.275, 0.170, 0.240, 0.250, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+        M4 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.170, 0.270, 0.190, 0.190, 0.285, 0.250, 0.225, 0.275, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+        M5 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+        M6 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+        CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
+        CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
         part_5_lta_level_1_known_correct_output = [.3,.1,0.333,8.266,3680.982,7947.020,3680.982,4.617,0.390,1593.429,1480.0]
         part_5_lta_level_1_output = Part5LTALevel1("Straight Pipes Subject To Internal Pressure"; equipment_group="piping",flaw_location="external",metal_loss_categorization="LTA",units="lbs-in-psi",tnom=.3,
                     trd=.3,FCA=0.0,FCAml=0.00,LOSS=0.0,Do=3.5,D=2.9,P=1480.0,S=20000.0,E=1.0,MA=0.0,Yb31=0.4, tsl=0.0, t=.3, spacings=0.5,s=6.0,c=2.0,El=1.0,Ec=1.0, RSFa=0.9, gl=0.0, gw=0.0, gr=0.0, β=0.0)
