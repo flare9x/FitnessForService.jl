@@ -286,5 +286,4 @@ end
         @test part_5_lta_level_1_known_correct_output[10] == round(part_5_lta_level_1_output[17,2], digits =3) # MAWPr check
         @test part_5_lta_level_1_known_correct_output[11] == round(part_5_lta_level_1_output[18,2], digits =3) # MAWPr check
     end
-        @testset "Level 1 assessment with FCA and FCAml" begin
 end
