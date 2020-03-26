@@ -11,7 +11,7 @@ creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; de
 design = DesignCodeCriteria("ASME B31.3 Piping Code")
 toughness = MaterialToughness("Certain")
 cyclic = CyclicService(100, "Meets Part 14")
-x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
+x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=10.0, design_temperature=100.0, units="lbs-in-psi")
 part5_applicability = Part5AsessmentApplicability(x,design,toughness,cyclic,creep_range)
 
 # VF-3125 :: area 1
@@ -72,6 +72,16 @@ M26 = [0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0.750,0
 CTPGrid = hcat(M26,M25,M24,M23,M22,M21,M20,M19,M18,M17,M16,M15,M14,M13,M12,M11,M10,M9,M8,M7,M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) #
 
+# For all assessments - determine the inspection data grid
+M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, 0.220, 0.280, 0.250, 0.240, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M3 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.215, 0.255, 0.215, 0.145, 0.275, 0.170, 0.240, 0.250, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M4 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.170, 0.270, 0.190, 0.190, 0.285, 0.250, 0.225, 0.275, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M5 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M6 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
+CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+
 
 # For all assessments - determine the inspection data grid
 M1 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
@@ -79,7 +89,7 @@ M2 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.50
 M3 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
 M4 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
 M5 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-M6 = [0.320, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
+M6 = [0.265, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
 CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
 CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 
@@ -91,14 +101,14 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     flaw_location = "external" # "External","Internal"
     metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
-    tnom = .562 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-    trd = 0.562 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-    FCAml = 0.075 # Future Corrosion Allowance applied to the region of metal loss.
-    FCA = 0.05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
-    LOSS = 0.042 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
-    Do = 6.625 # Outside Diameter
+    tnom = .500 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+    trd = 0.500 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+    FCAml = 0.05 # Future Corrosion Allowance applied to the region of metal loss.
+    FCA = 0.0 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+    LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
+    Do = 10.75 # Outside Diameter
     D = Do - 2*(tnom) # Inside Dia.
-    P = 2220.0 # internal design pressure.
+    P = 1480.000 # internal design pressure.
     S = 20000.0 # allowable stress.
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
