@@ -163,6 +163,7 @@ function Part5LTALevel1(annex2c_tmin_category::String; equipment_group::String="
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
     @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
+        let CTPGrid = CTPGrid
 
 print("Begin -- Level 1 Assessment - API 579 June 2016 Edition\n")
 # Adjust the FCA by internal and external as below
@@ -395,6 +396,7 @@ return out
 elseif (step6_satisfied == 0)
     print("Step 7 onwards Not Conducted Step 6 not satisfied")
 end
+end #let end
 end # function end
 
 # Simpsons rule odd number: https://scicomp.stackexchange.com/questions/25649/composite-simpsons-rule-with-odd-intervals
@@ -459,6 +461,7 @@ function Part5LTALevel2(annex2c_tmin_category::String; equipment_group::String="
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
     @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
+    let CTPGrid = CTPGrid
 
 print("Begin -- Level 2 Assessment - API 579 June 2016 Edition\n")
 # Adjust the FCA by internal and external as below
@@ -759,4 +762,5 @@ return out
 elseif (step6_satisfied == 0)
     print("Step 7 onwards Not Conducted Step 6 not satisfied")
 end
+end #let end
 end
