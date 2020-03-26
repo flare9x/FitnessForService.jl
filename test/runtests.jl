@@ -270,7 +270,7 @@ end
         M5 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
         M6 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
         CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
-        global CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+        CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 
         part_5_lta_level_1_known_correct_output = [.3,.1,0.333,8.266,3680.982,7947.020,3680.982,4.617,0.390,1593.429,1480.0]
         part_5_lta_level_1_output = Part5LTALevel1("Straight Pipes Subject To Internal Pressure"; equipment_group="piping",flaw_location="external",metal_loss_categorization="LTA",units="lbs-in-psi",tnom=.3,
