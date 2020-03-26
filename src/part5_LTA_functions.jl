@@ -344,7 +344,7 @@ MAWPr = MAWP*(RSF/RSFa)
 
 if (RSF >= RSFa)
     MAWPr = MAWP # (eq (2.3))
-    print("Region of metal loss is acceptable at the MAWP from Step 7\n")
+    print("Region of metal loss is acceptable at the MAWP from Step 7 ", round(MAWPr,digits=3)," psi\n")
 else
     MAWPr = MAWP*(RSF/RSFa) # (eq (2.2))
     print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=3),"psi\n")
@@ -352,11 +352,11 @@ end
 
 # Determing if MAWPr exceeds equipment MAWP or design pressure
 if (MAWPr >= P || MAWPr >= MAWP)
-    print("Component is acceptable for operating at the equipment design pressure or equipment MAWP\n")
+    print("MAWPr exceeds design pressure or equipment MAWP. Component is acceptable for continued operation\n")
     print("Part 5 level 1 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 1 assessment\n")
     level_1_satisfied = 1
 elseif (MAWPr < P || MAWPr < MAWP)
-    print("Component is unacceptable for operating at the equipment design pressure or equipment MAWP\n")
+    print("MAWPr is less than design pressure or equipment MAWP. The component is acceptable for continued operation at MAWPr\n")
     print("Part 5 level 1 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 1 assessment\n")
         level_1_satisfied = 0
 end
@@ -711,16 +711,16 @@ if (RSF >= RSFa)
     print("Region of metal loss is acceptable at the MAWP from Step 7\n")
 else
     MAWPr = MAWP*(RSF/RSFa) # (eq (2.2))
-    print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=3),"psi\n")
+    print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=3)," psi\n")
 end
 
 # Determing if MAWPr exceeds equipment MAWP or design pressure
 if (MAWPr >= P || MAWPr >= MAWP)
-    print("Component is acceptable for operating at the equipment design pressure or equipment MAWP\n")
+    print("MAWPr exceeds design pressure or equipment MAWP. Component is acceptable for continued operation\n")
     print("Part 5 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 2 assessment\n")
     level_2_satisfied = 1
 elseif (MAWPr < P || MAWPr < MAWP)
-    print("Component is unacceptable for operating at the equipment design pressure or equipment MAWP\n")
+    print("MAWPr is less than design pressure or equipment MAWP. The component is acceptable for continued operation at MAWPr\n")
     print("Part 5 level 2 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 2 assessment\n")
         level_2_satisfied = 0
 end

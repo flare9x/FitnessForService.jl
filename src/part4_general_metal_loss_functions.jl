@@ -120,7 +120,7 @@ function part4_PTR_Level_1_Assessment(x::Array{Float64}; annex2c_tmin_category::
         elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
             # calculate MAWP and Tmin
             # Tmin
-            tcmin = Pipingtcmin(P; Do=Do, S=S, E=E, Yb31=Yb31, MA=MA)
+            tcmin = Pipingtcmin(P, Do=Do, S=S, E=E, Yb31=Yb31, MA=MA)
             tlmin = Pipingtlmin(P, Do=Do, S=S, E=E, Yb31=Yb31, tsl=tsl, MA=MA)
             tmin = maximum([tcmin,tlmin])
             # MAWP
