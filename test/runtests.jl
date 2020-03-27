@@ -273,18 +273,18 @@ end
         CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 
         part_5_lta_level_1_known_correct_output = [.3,.1,0.333,8.266,3680.982,7947.020,3680.982,4.617,0.390,1593.429,1480.0]
-        part_5_lta_level_1_output = Part5LTALevel1(CTPGrid; annex2c_tmin_category="Straight Pipes Subject To Internal Pressure", equipment_group="piping",flaw_location="external",metal_loss_categorization="LTA",units="lbs-in-psi",Lmsd=12.0, tnom=.3,
+        part_5_lta_level_1_output = Part5LTALevel1(CTPGrid; tmm_forcing=false, tmm=0.0, annex2c_tmin_category="Straight Pipes Subject To Internal Pressure", equipment_group="piping",flaw_location="external",metal_loss_categorization="LTA",units="lbs-in-psi",Lmsd=12.0, tnom=.3,
                     trd=.3,FCA=0.0,FCAml=0.00,LOSS=0.0,Do=3.5,D=2.9,P=1480.0,S=20000.0,E=1.0,MA=0.0,Yb31=0.4, tsl=0.0, t=.3, spacings=0.5,s=6.0,c=2.0,El=1.0,Ec=1.0, RSFa=0.9, gl=0.0, gw=0.0, gr=0.0, β=0.0)
-        @test part_5_lta_level_1_known_correct_output[1] == part_5_lta_level_1_output[6,2] # tc check
-        @test part_5_lta_level_1_known_correct_output[2] == part_5_lta_level_1_output[7,2] # tmm check
-        @test part_5_lta_level_1_known_correct_output[3] == round(part_5_lta_level_1_output[8,2], digits =3) # Rt check
-        @test part_5_lta_level_1_known_correct_output[4] == round(part_5_lta_level_1_output[11,2], digits =3) # lambda check
-        @test part_5_lta_level_1_known_correct_output[5] == round(part_5_lta_level_1_output[12,2], digits =3) # MAWPc check
-        @test part_5_lta_level_1_known_correct_output[6] == round(part_5_lta_level_1_output[13,2], digits =3) # MAWPl check
-        @test part_5_lta_level_1_known_correct_output[7] == round(part_5_lta_level_1_output[14,2], digits =3) # MAWP check
-        @test part_5_lta_level_1_known_correct_output[8] == round(part_5_lta_level_1_output[15,2], digits =3) # Mt check
-        @test part_5_lta_level_1_known_correct_output[9] == round(part_5_lta_level_1_output[16,2], digits =3) # RSF check
-        @test part_5_lta_level_1_known_correct_output[10] == round(part_5_lta_level_1_output[17,2], digits =3) # MAWPr check
-        @test part_5_lta_level_1_known_correct_output[11] == round(part_5_lta_level_1_output[18,2], digits =3) # MAWPr check
+        @test part_5_lta_level_1_known_correct_output[1] == part_5_lta_level_1_output[7,2] # tc check
+        @test part_5_lta_level_1_known_correct_output[2] == part_5_lta_level_1_output[8,2] # tmm check
+        @test part_5_lta_level_1_known_correct_output[3] == round(part_5_lta_level_1_output[9,2], digits =3) # Rt check
+        @test part_5_lta_level_1_known_correct_output[4] == round(part_5_lta_level_1_output[12,2], digits =3) # lambda check
+        @test part_5_lta_level_1_known_correct_output[5] == round(part_5_lta_level_1_output[13,2], digits =3) # MAWPc check
+        @test part_5_lta_level_1_known_correct_output[6] == round(part_5_lta_level_1_output[14,2], digits =3) # MAWPl check
+        @test part_5_lta_level_1_known_correct_output[7] == round(part_5_lta_level_1_output[15,2], digits =3) # MAWP check
+        @test part_5_lta_level_1_known_correct_output[8] == round(part_5_lta_level_1_output[16,2], digits =3) # Mt check
+        @test part_5_lta_level_1_known_correct_output[9] == round(part_5_lta_level_1_output[17,2], digits =3) # RSF check
+        @test part_5_lta_level_1_known_correct_output[10] == round(part_5_lta_level_1_output[18,2], digits =3) # MAWPr check
+        @test part_5_lta_level_1_known_correct_output[11] == round(part_5_lta_level_1_output[19,2], digits =3) # MAWPr check
     end
 end

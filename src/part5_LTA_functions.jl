@@ -153,7 +153,7 @@ end # function end
     β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
-function Part5LTALevel1(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
+function Part5LTALevel1(CTPGrid::Array{Float64,2}; tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
     tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
@@ -196,7 +196,13 @@ tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for L
 out = sc(metal_loss_categorization; annex2c_tmin_category=annex2c_tmin_category,s=s,c=c,β=β,gl=gl,gw=gw)
 s = out[1]
 c = out[2]
+# force the tmm for LTA or allow to derive from the inspection grid
+if tmm_forcing == true
+    tmm = tmm
+elseif tmm_forcing == false
 tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the time of the inspection.
+end
+
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
 Rt = (tmm-FCAml) / tc # remaining thickness ratio. # (5.5)
@@ -347,7 +353,7 @@ if (RSF >= RSFa)
     print("Region of metal loss is acceptable at the MAWP from Step 7 ", round(MAWPr,digits=3)," psi\n")
 else
     MAWPr = MAWP*(RSF/RSFa) # (eq (2.2))
-    print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=3),"psi\n")
+    print("Region of metal loss is acceptable at MAWPr ", round(MAWPr,digits=3)," psi\n")
 end
 
 # Determing if MAWPr exceeds equipment MAWP or design pressure
@@ -390,8 +396,8 @@ end # end step 9.4
 elseif (annex2c_tmin_category != "Cylindrical Shell" || annex2c_tmin_category != "Conical Shell" || annex2c_tmin_category != "Pipe Bends Subject To Internal Pressure")
     print("The assessment is complete for all component types\n")
 end
-labels = ["Do","D","LOSS","FCA","FCAml","tc", "tmm", "Rt", "s","c","lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
-part_5_level_1_calculated_parameters = [Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, s,c,lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
+labels = ["tmm forcing" , "Do","D","LOSS","FCA","FCAml","tc", "tmm", "Rt", "s","c","lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+part_5_level_1_calculated_parameters = [tmm_forcing,Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, s,c,lambda, MAWPc, MAWPl, MAWP, Mt, RSF, MAWPr, P]
 out = hcat(labels,part_5_level_1_calculated_parameters)
 return out
 elseif (step6_satisfied == 0)

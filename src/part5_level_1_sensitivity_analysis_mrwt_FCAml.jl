@@ -36,14 +36,16 @@ equipment_group = "piping" # "vessel", "tank"
 flaw_location = "external" # "External","Internal"
 metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
 units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
-tnom = 0.365 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-trd = 0.365 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+tmm_forcing = true
+tmm = .62
+tnom = .719 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+trd = 0.719 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
 FCAml = 0.05 # Future Corrosion Allowance applied to the region of metal loss.
-FCA = 0.05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+FCA = 0.1 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
 LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
 Do = 10.75 # Outside Diameter
 D = Do - 2*(tnom) # Inside Dia.
-P = 740.0 # internal design pressure.
+P = 2220.0 # internal design pressure.
 S = 20000.0 # allowable stress.
 E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
 MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
@@ -81,9 +83,10 @@ gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded con
 β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.
 
 FCAml_i = collect(0:0.0001:.3)
-RCA_out = zeros(18)
+RCA_out = zeros(19)
 iterations_count = zeros(size(FCAml_i,1))
 data_temp = FCAml_i[1]
+i=1
 
 # Iterate to find MAWPr maximum FCAml
 for i = 1:size(FCAml_i,1)
@@ -99,39 +102,47 @@ for i = 1:size(FCAml_i,1)
         CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
         CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     FCAml = FCAml_i[i]
-    part_5_lta_output = Part5LTALevel1(CTPGrid; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
+    part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
-data_temp = part_5_lta_output[19:36]
+
+data_temp = part_5_lta_output[size(part_5_lta_output,1)+1:length(part_5_lta_output)]
 RCA_out = append!(RCA_out , data_temp)
 
     end
 end
 
+
 max = Int64.(maximum(iterations_count))
 if max == size(FCAml_i,1)
-    RCA_out = reshape(RCA_out,18,max+1)
+    RCA_out = reshape(RCA_out,size(part_5_lta_output,1),max+1)
 else
-    RCA_out = reshape(RCA_out,18,max)
+    RCA_out = reshape(RCA_out,size(part_5_lta_output,1),max)
 end
 RCA_out = RCA_out[:,2:size(RCA_out,2)]
 
-names_df = hcat(String.(part_5_lta_output[1:18]),RCA_out)
+names_df = hcat(String.(part_5_lta_output[1:size(part_5_lta_output,1)]),RCA_out)
 
 df = DataFrame(names_df)
 
 CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/PS_out_FCA.csv", df;delim=',')
 
 # accoutn for variance in the MRWT
-mrwt = .220
-upper = mrwt + .05
-lower = mrwt - 0.05
+mrwt = tmm
+upper = mrwt + .1
+lower = mrwt - 0.1
 x = collect(lower:0.0005:upper)
-print(x)
 perc = (x .- mrwt) / mrwt *100
-print(perc)
 iterations_count = zeros(size(x,1))
-data_out = zeros(18)
+data_out = zeros(19)
 data_temp = x[1]
+
+# Save datafrmaes
+
+x_out = DataFrame(hcat(x))
+perc_out = DataFrame(hcat(perc))
+
+CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/x_out.csv", x_out;delim=',')
+CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/perc_out.csv", perc_out;delim=',')
 
 for i = 1:size(x,1)
     iterations_count[i] = i
@@ -145,9 +156,9 @@ for i = 1:size(x,1)
         M6 = [x[i], 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
         CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
         CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
-    part_5_lta_output = Part5LTALevel1(CTPGrid; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
+    part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=x[i], annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
-data_temp = part_5_lta_output[19:36]
+data_temp = part_5_lta_output[size(part_5_lta_output,1)+1:length(part_5_lta_output)]
 data_out = append!(data_out , data_temp)
 
     end
@@ -156,13 +167,13 @@ end
 
 max = Int64.(maximum(iterations_count))
 if max == size(x,1)
-    data_out = reshape(data_out,18,max+1)
+    data_out = reshape(data_out,19,max+1)
 else
-    data_out = reshape(data_out,18,max)
+    data_out = reshape(data_out,19,max)
 end
 data_out = data_out[:,2:size(data_out,2)] # subet
 
-names_df = hcat(String.(part_5_lta_output[1:18]),data_out)
+names_df = hcat(String.(part_5_lta_output[1:19]),data_out)
 
 
 df = DataFrame(names_df)
