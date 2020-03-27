@@ -178,7 +178,7 @@ Piping MAWPc = 3680.982psi
 Piping MAWPl = 7947.02psi
 Final MAWP = 3680.982psi
 Region of metal loss is acceptable at MAWPr 1593.429psi
-Component is acceptable for operating at the equipment design pressure or equipment MAWP
+MAWPr is less than design pressure or equipment MAWP. The component is acceptable for continued operation at MAWPr
 Part 5 level 1 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 1 assessment
 The assessment is complete for all component types
  ```
@@ -201,7 +201,7 @@ Piping MAWPc = 3680.982psi
 Piping MAWPl = 7947.02psi
 Final MAWP = 3680.982psi
 Region of metal loss is acceptable at MAWPr 3008.189psi
-Component is acceptable for operating at the equipment design pressure or equipment MAWP
+MAWPr is less than design pressure or equipment MAWP. The component is acceptable for continued operation at MAWPr
 Part 5 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 2 assessment
 The component is a cylindrical shell, conical shell, or elbow
  Begin -- evaluate the circumferential extent
