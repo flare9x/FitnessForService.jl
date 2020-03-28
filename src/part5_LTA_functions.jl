@@ -166,14 +166,7 @@ function Part5LTALevel1(CTPGrid::Array{Float64,2}; tmm_forcing::Bool=false, tmm:
     @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
 
-print("Begin -- Level 1 Assessment - API 579 June 2016 Edition\n")
-# Adjust the FCA by internal and external as below
-FCA_string = "internal"  # "External","Internal"
-if (FCA_string == "internal")
-Dml = D + (2*FCAml) # inside diameter of the shell corrected for FCAml , as applicable.
-elseif (FCA_string == "external")
-    Dml = D # inside diameter of the shell corrected for FCAml , as applicable.
-end
+print("Begin -- Part 5 LTA Level 1 Assessment - API 579 June 2016 Edition\n")
 
 # STEP 1 – Determine the CTP (see paragraph 5.3.3.2).
 # Grid is the same for level 1,2,3 therefore used as input for a function - data grid function returns tmm see data_grids.jl
@@ -470,14 +463,7 @@ function Part5LTALevel2(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String
     @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
 
-print("Begin -- Level 2 Assessment - API 579 June 2016 Edition\n")
-# Adjust the FCA by internal and external as below
-FCA_string = "internal"  # "External","Internal"
-if (FCA_string == "internal")
-Dml = D + (2*FCAml) # inside diameter of the shell corrected for ml FCA , as applicable.
-elseif (FCA_string == "external")
-    Dml = D # inside diameter of the shell corrected for FCAml , as applicable.
-end
+print("Begin -- Part 5 LTA Level 2 Assessment - API 579 June 2016 Edition\n")
 
 # STEP 1 – Determine the CTP (see paragraph 5.3.3.2)
 # Grid is the same for level 1,2,3 therefore used as input for a function - data grid function returns tmm see data_grids.jl
