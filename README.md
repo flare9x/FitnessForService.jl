@@ -3,11 +3,12 @@
 # FitnessForService.jl
  API 579 Fitness For Service Methodologies
 
-## Usage
+## Installation
 ```julia
     ]
  add https://github.com/flare9x/FitnessForService.jl
  ```
+## Usage
 
 ## API 579 Part 5 – Assessment of Local Metal Loss - Level 1 & 2 Assessment
 
@@ -208,6 +209,27 @@ The component is a cylindrical shell, conical shell, or elbow
 eq 5.13 satisfied - no further evaluation is required
  ```
  
+ ## Sensitivty Analysis 
+ 
+ Understanding input varibles and their relative sensitivty on the assessment output. 
+ 
+ Example of iterating through a range of FCAml values and observing the effect on the MAWPr output:
+ 
+ ![fcaml](https://github.com/flare9x/FitnessForService.jl/blob/master/images/FCAml_spectrum.PNG)
+ 
+ The plot shows permissible FCAml allowances up to stated design pressure. 
+ 
+ Considering confidence levels in the ability of inspection / NDE to find the maximum loss in a region of damage. 
+ To account for variance in inspection / NDE in reporting the minimum thickness:
+ 
+![minimum remaining wall thickness](https://github.com/flare9x/FitnessForService.jl/blob/master/images/remaining_WT_range_of_t_values.PNG)
+  
+eg: If the NDE technique used has known error of up to 10%. One may observe the spectrum of error up to stated design pressure. If within expected reason further confidence can be obtained moving forward with the observed results.
+
+API 579 - LTA Corroded Profile:
+
+![api 579 corroded profile](https://github.com/flare9x/FitnessForService.jl/blob/master/images/api_579_corrosion_profile.PNG)
+  
 
 ## Unit Test Summary
 
