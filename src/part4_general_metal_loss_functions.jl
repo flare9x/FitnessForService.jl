@@ -377,14 +377,14 @@ function part4_PTR_Level_2_Assessment(x::Array{Float64}; annex2c_tmin_category::
                 end
 
         if tmin_accept + tmm_accept == 2
-            print("Part 4 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 1 assessment (Averaged Measured Thickness)\n")
+            print("Part 4 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 2 assessment (Averaged Measured Thickness)\n")
         elseif tmin_accept + tmm_accept != 2
-            print("Part 4 level 2 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 1 assessment\n")
+            print("Part 4 level 2 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 2 assessment\n")
         end
         if mawp_accept + tmm_accept == 2
-                print("Part 4 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 1 assessment (MAWP)\n")
+                print("Part 4 level 2 - Satisfies June 2016 API 579-1/ASME FFS-1 Level 2 assessment (MAWP)\n")
         elseif mawp_accept + tmm_accept != 2
-                print("Part 4 level 2 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 1 assessment\n")
+                print("Part 4 level 2 - Does not satisfy June 2016 API 579-1/ASME FFS-1 Level 2 assessment\n")
         end
 
         # end piping level 1
@@ -452,8 +452,6 @@ function part4_CTP_Level_1_Assessment(CTPGrid::Array{Float64,2}; FCA_string::Str
     @assert any(equipment_group .== ["piping", "vessel", "tank"]) "Invalid input: please enter either: 'piping','vessel','tank' "
     @assert any(FCA_string .== ["external", "internal"]) "Invalid input: please enter either: 'external', 'internal' "
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
-    @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
-    @assert size(x,1) >= 15 "Minimum of 15 readings required to confirm metal loss is general - provide more readings'"
 
 print("Begin -- Part 4 LTA Level 1 Assessment (Critical Thickness Profile) - API 579 June 2016 Edition\n")
 
@@ -820,7 +818,6 @@ function part4_CTP_Level_2_Assessment(CTPGrid::Array{Float64,2}; FCA_string::Str
     @assert any(FCA_string .== ["external", "internal"]) "Invalid input: please enter either: 'external', 'internal' "
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
-    @assert size(x,1) >= 15 "Minimum of 15 readings required to confirm metal loss is general - provide more readings'"
 
 print("Begin -- Part 4 LTA Level 2 Assessment (Critical Thickness Profile) - API 579 June 2016 Edition\n")
 

@@ -11,7 +11,7 @@ x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structura
 part4_applicability = Part5AsessmentApplicability(x,design,smoothness,cyclic,creep_range)
 
 
-# level single point reading data
+# single point reading data
 x = [0.300, 0.300, 0.300, 0.3, 0.300, 0.275, 0.275, 0.275, 0.275, 0.275, 0.275, 0.240, 0.186, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 
 equipment_group = "piping" # "vessel", "tank"\n
@@ -63,7 +63,7 @@ elseif (part4_applicability[1] == 0 && lmsd_satisfied == 1)
     print("Level 1 Criteria Not Met - Perform Level 3 as applicable")
 end
 
-# Perform level 2 assessment
+# Perform level 2 assessment  - Single Point Readings
 if (part4_applicability[2] == 1 && lmsd_satisfied == 1) # begin level 2 assessment
     #let part_5_lta_output = Array{Any,2},
     part_4_l2_output = part4_PTR_Level_2_Assessment(x; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group,flaw_location=flaw_location,units=units,tnom=tnom,
@@ -78,7 +78,8 @@ elseif (part4_applicability[1] == 0 && lmsd_satisfied == 1)
 end
 
 
-# Part 4 - CTP
+
+# Part 4 level 1/2 - CTP
 
 # For all assessments - determine the inspection data grid
 M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.3, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
