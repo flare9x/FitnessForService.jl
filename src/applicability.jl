@@ -516,6 +516,8 @@ end # function end
     Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::Int64, cyclic::Int64, creep_range::Int64)::Array{Int64}
 
 Insure API 579 5.2.5 are satisfied in order to conduct a level 1 and/or level 2 assessment
+
+Returns Level 1,2 and 3 applicability
 """ ->
 function Part5AsessmentApplicability(x::Array{Int64}, design::Int64, toughness::Int64, cyclic::Int64, creep_range::Int64)::Array{Int64}
     # level 1
