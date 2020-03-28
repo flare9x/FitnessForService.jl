@@ -7,10 +7,10 @@ creep_range = CreepRangeTemperature("Carbon Steel (UTS ≤ 414MPa (60 ksi))"; de
 design = DesignCodeCriteria("ASME B31.3 Piping Code")
 smoothness = Smoothness("Smooth Contour")
 cyclic = CyclicService(100, "Meets Part 14")
-x = Part5ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
-part4_applicability = Part5AsessmentApplicability(x,design,smoothness,cyclic,creep_range)
+x = Part4ComponentType("Straight Section of Piping, Elbow or Bend - No Structural Attachments", vessel_orientation="horizontal", material="Carbon and Low Alloy Steels", D=24.75,Lss=120.0,H=0.0, NPS=3.0, design_temperature=100.0, units="lbs-in-psi")
+part4_applicability = Part4AsessmentApplicability(x,design,smoothness,cyclic,creep_range)
 
-
+@doc Part4ComponentType
 # single point reading data
 x = [0.300, 0.300, 0.300, 0.3, 0.300, 0.275, 0.275, 0.275, 0.275, 0.275, 0.275, 0.240, 0.186, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
 
