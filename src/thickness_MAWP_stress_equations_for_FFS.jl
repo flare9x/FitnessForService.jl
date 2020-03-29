@@ -36,7 +36,7 @@ MA # mechanical allowances (thread or groove depth); for threaded components, th
 Yb31 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C\n
 t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable\n
 """ ->
-function Pipingtcmin(P::Float64, Do::Float64=0.0, S::Float64=0.0, E::Float64=0.0, Yb31::Float64=0.0, MA::Float64=0.0)
+function Pipingtcmin(P::Float64; Do::Float64=0.0, S::Float64=0.0, E::Float64=0.0, Yb31::Float64=0.0, MA::Float64=0.0)
     tcmin = ((P*Do) / (2*((S*E) + (P*Yb31)))) + MA # (2C.146)
     return tcmin
 end
