@@ -37,15 +37,15 @@ flaw_location = "external" # "External","Internal"
 metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
 units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
 tmm_forcing = true
-tmm = .62
-tnom = .719 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-trd = 0.719 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+tmm = .165
+tnom = 0.280 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+trd = 0.280 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
 FCAml = 0.05 # Future Corrosion Allowance applied to the region of metal loss.
-FCA = 0.1 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
-LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
-Do = 10.75 # Outside Diameter
+FCA = 0.05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+LOSS = 0.045 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
+Do = 6.625 # Outside Diameter
 D = Do - 2*(tnom) # Inside Dia.
-P = 2220.0 # internal design pressure.
+P = 740.0 # internal design pressure.
 S = 20000.0 # allowable stress.
 E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
 MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
@@ -55,7 +55,7 @@ tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that
 spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion -----------+ may add to CTP_Grid function for plotting purposes
 # Flaw dimensions
 s = 6.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
-c = 8.443030257  # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
+c = 2.0  # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
 Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
 El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
 RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9
@@ -92,17 +92,9 @@ i=1
 for i = 1:size(FCAml_i,1)
     iterations_count[i] = i
     let RCA_out = RCA_out, data_temp = data_temp
-        # For all assessments - determine the inspection data grid
-        M1 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M2 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M3 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M4 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M5 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M6 = [0.220, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
-        CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+
     FCAml = FCAml_i[i]
-    part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
+    global part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
 
 data_temp = part_5_lta_output[size(part_5_lta_output,1)+1:length(part_5_lta_output)]
@@ -114,9 +106,9 @@ end
 
 max = Int64.(maximum(iterations_count))
 if max == size(FCAml_i,1)
-    RCA_out = reshape(RCA_out,size(part_5_lta_output,1),max+1)
+    RCA_out = reshape(RCA_out,19,max+1)
 else
-    RCA_out = reshape(RCA_out,size(part_5_lta_output,1),max)
+    RCA_out = reshape(RCA_out,19,max)
 end
 RCA_out = RCA_out[:,2:size(RCA_out,2)]
 
@@ -126,7 +118,7 @@ df = DataFrame(names_df)
 
 CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/PS_out_FCA.csv", df;delim=',')
 
-# accoutn for variance in the MRWT
+# account for variance in the MRWT
 mrwt = tmm
 upper = mrwt + .1
 lower = mrwt - 0.1
@@ -147,15 +139,7 @@ CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/perc_out.csv", pe
 for i = 1:size(x,1)
     iterations_count[i] = i
     let data_out = data_out, data_temp = data_temp
-        # For all assessments - determine the inspection data grid
-        M1 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M2 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M3 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M4 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M5 = [0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        M6 = [x[i], 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500, 0.500]
-        CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
-        CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+
     part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=x[i], annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
 data_temp = part_5_lta_output[size(part_5_lta_output,1)+1:length(part_5_lta_output)]
