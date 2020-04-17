@@ -179,7 +179,7 @@ c2 = (c * 2) / spacings # minimum inspection boundary - circumferential  directi
 =#
 
 # STEP 2 – Determine the wall thickness to be used in the assessment using Equation (5.3) or Equation (5.4), as applicable.
-tc = trd - LOSS - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.3)
+tc = tnom - LOSS - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.3)
 #tc = trd - FCA # wall thickness away from the damaged area adjusted for LOSS and FCA , as applicable. # eq (5.4)
 
 # STEP 3 – Determine the minimum measured thickness in the LTA, tmm , and the flaw dimensions, s and c (see paragraph 5.3.3.2.b) for the CTP.
@@ -199,6 +199,7 @@ end
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
 Rt = (tmm-FCAml) / tc # remaining thickness ratio. # (5.5)
+D = D + (2*(FCA+LOSS))
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
