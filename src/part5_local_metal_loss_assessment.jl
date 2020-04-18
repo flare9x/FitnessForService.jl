@@ -31,6 +31,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
     equipment_group = "piping" # "vessel", "tank"
     flaw_location = "external" # "External","Internal"
+    FCA_string = "external"
     metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
     tmm_forcing = true
@@ -38,7 +39,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     tnom = .5 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
     trd = .5 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
     FCAml = 0.105 # Future Corrosion Allowance applied to the region of metal loss.
-    FCA = 0.05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+    FCA = 0.1 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
     LOSS = 0.015 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
     Do = 10.75 # Outside Diameter
     D = Do - 2*(tnom) # Inside Dia.
@@ -82,7 +83,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 # Perform level 1 assessment
 if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessment
     #let part_5_lta_output = Array{Any,2},
-    part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
+    part_5_lta_output = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
     part_5_lta_output
@@ -98,7 +99,7 @@ end
 # Perform level 2 assessment
 if (part5_applicability[2] == 1 && lmsd_satisfied == 1) # begin level 2 assessment
     #let part_5_lta_output = Array{Any,2},
-    part_5_lta_output = Part5LTALevel2(CTPGrid; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
+    part_5_lta_output = Part5LTALevel2(CTPGrid; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, t=t,spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)

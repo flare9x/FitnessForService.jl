@@ -153,7 +153,7 @@ end # function end
     β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
-function Part5LTALevel1(CTPGrid::Array{Float64,2}; tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
+function Part5LTALevel1(CTPGrid::Array{Float64,2}; tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
     tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
@@ -199,7 +199,14 @@ end
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
 Rt = (tmm-FCAml) / tc # remaining thickness ratio. # (5.5)
-D = D + (2*(FCA+LOSS))
+
+# Adjust the FCA by internal and external as below
+if (FCA_string == "internal")
+D = D + (2*(FCA+LOSS)) # inside diameter of the cylinder, cone (at the location of the flaw), sphere, or formed head corrected for LOSS and FCA as applicable;
+elseif (FCA_string == "external")
+    Do = Do - (2*(LOSS)) # inside diameter of the shell corrected for FCAml , as applicable.
+end
+
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
@@ -451,7 +458,7 @@ end # function end
     β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
-function Part5LTALevel2(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
+function Part5LTALevel2(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
     tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
@@ -491,6 +498,14 @@ tmm, long_CTP = CTP_Grid(CTPGrid) # minimum measured thickness determined at the
 
 # STEP 4 – Determine the remaining thickness ratio using Equation (5.5) and the longitudinal flaw length parameter using Equation (5.6).
 Rt = (tmm[1]-FCAml) / tc # remaining thickness ratio. # (5.5)
+
+# Adjust the FCA by internal and external as below
+if (FCA_string == "internal")
+D = D + (2*(FCA+LOSS)) # inside diameter of the cylinder, cone (at the location of the flaw), sphere, or formed head corrected for LOSS and FCA as applicable;
+elseif (FCA_string == "external")
+    Do = Do - (2*(LOSS)) # inside diameter of the shell corrected for FCAml , as applicable.
+end
+
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
 
 # STEP 5 – Check the limiting flaw size criteria; if the following requirements are satisfied, proceed to STEP 6; otherwise, the flaw is not acceptable per the Level 1 Assessment procedure.
