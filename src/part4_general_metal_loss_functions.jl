@@ -827,8 +827,7 @@ print("Begin -- Part 4 LTA Level 2 Assessment (Critical Thickness Profile) - API
     # and Equation (4.3) or Equation (4.4).
     tml = tnom - FCAml
 
-    # Adjust the FCA by internal and external as below
-    FCA_string = "internal"
+    # Adjust the FCA by internal and external as belows
     if (FCA_string == "internal")
     Dml = D + (2*FCAml) # inside diameter of the shell corrected for FCAml, as applicable.
     elseif (FCA_string == "external")

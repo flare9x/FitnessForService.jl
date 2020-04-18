@@ -153,7 +153,7 @@ end # function end
     β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
-function Part5LTALevel1(CTPGrid::Array{Float64,2}; tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
+function Part5LTALevel1(CTPGrid::Array{Float64,2}; remaining_life::Bool=false, tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
     trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
     tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
@@ -204,7 +204,7 @@ Rt = (tmm-FCAml) / tc # remaining thickness ratio. # (5.5)
 if (FCA_string == "internal")
 D = D + (2*(FCA+LOSS)) # inside diameter of the cylinder, cone (at the location of the flaw), sphere, or formed head corrected for LOSS and FCA as applicable;
 elseif (FCA_string == "external")
-    Do = Do - (2*(LOSS)) # inside diameter of the shell corrected for FCAml , as applicable.
+    Do = Do - (2*(LOSS)) # outside diameter of the cylinder, corrected for LOSS and FCA as applicable.
 end
 
 lambda = (1.285*s)/(sqrt(D*tc)) # longitudinal flaw length parameter eq (5.6)
@@ -346,6 +346,7 @@ end
 # flaw is acceptable for operation at the MAWP determined in STEP 7.
 
 RSF = Rt / (1-1/Mt*(1-Rt)) # eq (5.12)
+
 #RSF = 0.551 / (1-1/2.232*(1-0.551)) # eq (5.12)
 MAWPr = MAWP*(RSF/RSFa)
 
@@ -402,7 +403,11 @@ part_5_level_1_calculated_parameters = [tmm_forcing,Do,D,LOSS,FCA,FCAml,tc, tmm,
 out = hcat(labels,part_5_level_1_calculated_parameters)
 return out
 elseif (step6_satisfied == 0)
+    labels = ["tmm forcing" , "Do","D","LOSS","FCA","FCAml","tc", "tmm", "Rt", "s","c","lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+    part_5_level_1_calculated_parameters = [tmm_forcing,Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, s,c,lambda, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, P]
+    out = hcat(labels,part_5_level_1_calculated_parameters)
     print("Step 7 onwards Not Conducted Step 6 not satisfied")
+return out
 end
 end # function end
 
@@ -769,6 +774,10 @@ global part_5_level_2_calculated_parameters = [Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, 
 out = hcat(labels,part_5_level_2_calculated_parameters)
 return out
 elseif (step6_satisfied == 0)
+    labels = ["tmm forcing" , "Do","D","LOSS","FCA","FCAml","tc", "tmm", "Rt", "s","c","lambda", "MAWPc", "MAWPl", "MAWP", "Mt", "RSF", "MAWPr", "P"]
+    part_5_level_1_calculated_parameters = [tmm_forcing,Do,D,LOSS,FCA,FCAml,tc, tmm, Rt, s,c,lambda, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, P]
+    out = hcat(labels,part_5_level_1_calculated_parameters)
     print("Step 7 onwards Not Conducted Step 6 not satisfied")
+return out
 end
 end
