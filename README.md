@@ -636,6 +636,12 @@ eg: If the NDE technique used has known error of up to 10%. One may observe the 
 API 579 - LTA Corroded Profile:
 
 ![api 579 corroded profile](https://github.com/flare9x/FitnessForService.jl/blob/master/images/api_579_corrosion_profile.PNG)
+
+ ## Remaining Life Iteration 
+
+![api 579 remaining life](https://github.com/flare9x/FitnessForService.jl/blob/master/images/remaining_life_static_cr_rate.png)
+
+![api 579 remaining life_range_of_corrosion_rates](https://github.com/flare9x/FitnessForService.jl/blob/master/images/remaining_life.png)
   
 
 ## Unit Test Summary
