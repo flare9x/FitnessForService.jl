@@ -38,6 +38,39 @@ Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2
 El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
 RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9
 
+# For all assessments determine far enough from structural discontinuity
+# Flaw-To-Major Structural Discontinuity Spacing
+L1msd = [12.0] # distance to the nearest major structural discontinuity.
+L2msd = [12.0] # distance to the nearest major structural discontinuity.
+L3msd = [12.0] # distance to the nearest major structural discontinuity.
+L4msd = [12.0] # distance to the nearest major structural discontinuity.
+L5msd = [12.0] # distance to the nearest major structural discontinuity.
+Lmsd = minimum([L1msd,L2msd,L3msd,L4msd,L5msd])[1]
+if (Lmsd >= (1.8*(sqrt(D*(trd - LOSS - FCA)))))
+    print("Satisfied - Flaw is located far enough from structural discontinuity\n")
+    lmsd_satisfied = 1
+else
+    print("Not satisfied - Flaw is too close to a structural discontinuity - Conduct a level 3 assessment\n")
+    lmsd_satisfied = 0
+end
+
+# For all assessments - determine the inspection data grid
+M1 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M2 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.100, 0.220, 0.280, 0.250, 0.240, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M3 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.215, 0.255, 0.215, 0.145, 0.275, 0.170, 0.240, 0.250, 0.250, 0.280, 0.290, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M4 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.170, 0.270, 0.190, 0.190, 0.285, 0.250, 0.225, 0.275, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M5 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+M6 = [0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300, 0.300]
+CTPGrid = hcat(M6,M5,M4,M3,M2,M1) # build in descending order
+CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
+
+# Groove Like Flaw dimensions
+gl = .05 # length of the Groove-Like Flaw based on future corroded condition.
+gw = .4 # width of the Groove-Like Flaw based on future corroded condition.
+gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.
+β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.
+
+
 # STEP 1 – Determine the metal loss of the component, tloss
 tloss = tnom - tmm
 
@@ -85,6 +118,7 @@ draw(PNG("C:/Users/Andrew.Bannerman/OneDrive - Shell/Documents/remaining_life_st
 
 
 # Part 5 Remaining life method - note tmm defined vs CTP's use MAWP RL approach
+# this is for varying corrosion rates
 crate = collect(0:0.0025:0.03)
 time = collect(1.0:1.0:50.0)
 MAWPr = zeros(size(time,1))

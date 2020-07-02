@@ -121,6 +121,7 @@ end # function end
     annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]\n
+    pipe_code # B31.3, B31.8 etc.. \n
     flaw_location = "external" # "External","Internal"\n
     metal_loss_categorization = "Groove-Like Flaw" # "LTA" or "Groove-Like Flaw"\n
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"\n
@@ -137,6 +138,8 @@ end # function end
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .\n
+    F # design factor obtained from Table 841.1.6-1. In setting the values of the design factor, F, due consideration has been given and allowance has been made for the various underthickness \ntolerances provided for in the pipe specifications listed and approved for usage in this Code (B31.8)\n
+    T # temperature derating factor obtained from Table 841.1.8-1 (B31.8)\n
     t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.\n
     tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).\n
     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion\n
@@ -153,8 +156,8 @@ end # function end
     β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
-function Part5LTALevel1(CTPGrid::Array{Float64,2}; remaining_life::Bool=false, tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
-    trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
+function Part5LTALevel1(CTPGrid::Array{Float64,2}; remaining_life::Bool=false, tmm_forcing::Bool=false, tmm::Float64=0.0, annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",pipe_code::String="B31.3",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
+    trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0, F::Float64=0.0, T::Float64=0.0,
     tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
@@ -162,6 +165,7 @@ function Part5LTALevel1(CTPGrid::Array{Float64,2}; remaining_life::Bool=false, t
     'Junction Reinforcement Requirements at Conical Transitions','Tubesheets','Flat head to cylinder connections','Bolted Flanges','Straight Pipes Subject To Internal Pressure','Boiler Tubes','Pipe Bends Subject To Internal Pressure',
     'MAWP for External Pressure','Branch Connections','API 650 Storage Tanks' "
     @assert any(equipment_group .== ["piping", "vessel", "tank"]) "Invalid input: please enter either: 'piping','vessel','tank' "
+    @assert any(pipe_code .== ["B31.3", "B31.8"]) "Invalid input: please enter either: 'B31.3','B31.8' "
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
     @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
@@ -262,6 +266,7 @@ if (step6_satisfied == 1) # begin step 7 onwards
     elseif (annex2c_tmin_category == "Bolted Flanges")
         #tmin here
     elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
+        if pipe_code == "B31.3"
         MAWPc = PipingMAWPc(S, E=E, t=tc, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
         print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
         MAWPl = PipingMAWPl(S; E=E, t=tc, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
@@ -269,6 +274,12 @@ if (step6_satisfied == 1) # begin step 7 onwards
         MAWP = minimum([MAWPc,MAWPl])
         #MAWP = S * log((Do- 2*Co)/(Do-2*(.750-0.0)))
         print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
+        elseif pipe_code == "B31.8"
+        MAWPc = 0.0
+        MAWPl = 0.0
+        MAWP = B31_8Piping_P(S; F=F, E=E, T=T, Do=Do, t=tc)
+        print("B31.8 P = ",round(MAWP, digits=3),"psi\n")
+        end
     elseif (annex2c_tmin_category == "Boiler Tubes")
         #tmin here
     elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")
@@ -431,6 +442,7 @@ end # function end
     annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]\n
+    pipe_code # B31.3, B31.8 etc.. \n
     flaw_location = "external" # "External","Internal"\n
     metal_loss_categorization = "Groove-Like Flaw" # "LTA" or "Groove-Like Flaw"\n
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"\n
@@ -445,6 +457,8 @@ end # function end
     P = 1480 # internal design pressure.\n
     S = 20000 # allowable stress.\n
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.\n
+    F # design factor obtained from Table 841.1.6-1. In setting the values of the design factor, F, due consideration has been given and allowance has been made for the various underthickness \ntolerances provided for in the pipe specifications listed and approved for usage in this Code (B31.8)\n
+    T # temperature derating factor obtained from Table 841.1.8-1 (B31.8)\n
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.\n
     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .\n
     t = trd # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.\n
@@ -463,8 +477,8 @@ end # function end
     β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.\n
 
 """->
-function Part5LTALevel2(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
-    trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0,
+function Part5LTALevel2(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String="Straight Pipes Subject To Internal Pressure", equipment_group::String="piping",pipe_code::String="B31.3",flaw_location::String="external",FCA_string::String="external",metal_loss_categorization::String="LTA",units::String="lbs-in-psi",Lmsd::Float64=0.0,tnom::Float64=0.0,
+    trd::Float64=0.0,FCA::Float64=0.0,FCAml::Float64=0.0,LOSS::Float64=0.0,Do::Float64=0.0,D::Float64=0.0,P::Float64=0.0,S::Float64=0.0,E::Float64=0.0,MA::Float64=0.0,Yb31::Float64=0.0, F::Float64=0.0, T::Float64=0.0,
     tsl::Float64=0.0, t::Float64=0.0, spacings::Float64=0.0,s::Float64=0.0,c::Float64=0.0,El::Float64=0.0,Ec::Float64=0.0, RSFa::Float64=0.9, gl::Float64=0.0, gw::Float64=0.0, gr::Float64=0.0, β::Float64=0.0)
     @assert any(annex2c_tmin_category .== ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
     "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
@@ -472,6 +486,7 @@ function Part5LTALevel2(CTPGrid::Array{Float64,2}; annex2c_tmin_category::String
     'Junction Reinforcement Requirements at Conical Transitions','Tubesheets','Flat head to cylinder connections','Bolted Flanges','Straight Pipes Subject To Internal Pressure','Boiler Tubes','Pipe Bends Subject To Internal Pressure',
     'MAWP for External Pressure','Branch Connections','API 650 Storage Tanks' "
     @assert any(equipment_group .== ["piping", "vessel", "tank"]) "Invalid input: please enter either: 'piping','vessel','tank' "
+    @assert any(pipe_code .== ["B31.3", "B31.8"]) "Invalid input: please enter either: 'B31.3','B31.8' "
     @assert any(flaw_location .== ["external", "internal"]) "Invalid input: please enter either: 'external shells', 'internal shells' "
     @assert any(metal_loss_categorization .== ["LTA", "Groove-Like Flaw"]) "Invalid input: please enter either: 'LTA', 'Groove-Like Flaw' "
     @assert any(units .== ["lbs-in-psi", "nmm-mm-mpa"]) "Invalid input: please enter either: 'lbs-in-psi', 'nmm-mm-mpa' "
@@ -580,12 +595,20 @@ if (step6_satisfied == 1) # begin step 7 onwards
     elseif (annex2c_tmin_category == "Bolted Flanges")
         #tmin here
     elseif (annex2c_tmin_category == "Straight Pipes Subject To Internal Pressure")
+        if pipe_code == "B31.3"
         MAWPc = PipingMAWPc(S, E=E, t=tc, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.147)
         print("Piping MAWPc = ",round(MAWPc, digits=3),"psi\n")
         MAWPl = PipingMAWPl(S; E=E, t=tc, tsl=tsl, MA=MA, Do=Do, Yb31=Yb31) # eq (2C.150)
         print("Piping MAWPl = ",round(MAWPl, digits=3),"psi\n")
         MAWP = minimum([MAWPc,MAWPl])
+        #MAWP = S * log((Do- 2*Co)/(Do-2*(.750-0.0)))
         print("Final MAWP = ",round(MAWP, digits=3),"psi\n")
+        elseif pipe_code == "B31.8"
+        MAWPc = 0.0
+        MAWPl = 0.0
+        MAWP = B31_8Piping_P(S; F=F, E=E, T=T, Do=Do, t=tc)
+        print("B31.8 P = ",round(MAWP, digits=3),"psi\n")
+        end
     elseif (annex2c_tmin_category == "Boiler Tubes")
         #tmin here
     elseif (annex2c_tmin_category == "Pipe Bends Subject To Internal Pressure")

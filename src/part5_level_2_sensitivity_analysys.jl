@@ -20,6 +20,7 @@ annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylind
 # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
 equipment_group = "piping" # "vessel", "tank"
 flaw_location = "external" # "External","Internal"
+pipe_code = "B31.3" # "B31.3", "B31.8"
 FCA_string = "external"
 metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
 units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
@@ -33,6 +34,8 @@ D = Do - 2*(tnom)
 P = 1480.0 # internal design pressure.
 S = 20000.0 # allowable stress.
 E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
+F = 0.6 # B31.8 design factor
+T = 1.0 # temperature factor B31.8
 MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
 Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .
 t = trd - LOSS - FCAml # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.

@@ -1,0 +1,173 @@
+
+# ASME B31G-2012 - Manual for Determining the Remaining Strength of Corroded Pipelines
+# B31G Level 0 Evaluation
+D = 20
+Tnom = 1.0
+d = .200 # depth of the metal loss
+Lm = 1.5 #  longitudinal extent of the corroded area
+Ltable = 4.35 # values of L per code (maximum longitudinal extent)
+
+if Lm < Ltable
+    print("B31G Level 0 Evaluation Pass - No Repair Needed\n")
+else
+    print("B31G Level 0 Evaluation Fail - Repair Needed\n")
+end
+
+# Level 1 Evaluation
+S = 70000  # specified minimum yield strength
+t = 1.51 # pipe wall thickness
+T = 1.51 # pipe wall thickness B31.8
+D = 8.625 # specified outside diameter of the pipe
+F = .6  # Design Factor = hoop stress/specified minimum yield strength
+d = .100 # pit depth
+L = 6.0
+
+# Sflow = 1.1 * SMYS
+Sflow = 1.1 * S
+
+# Calculated MAOP
+MAOP = (2 * S * t * F * T) / D # B31.8
+Po = 2200    # set to MAWP or operating
+
+# Hoop Stress At Operating Pressure
+So = Po * D / 2 * t
+
+# Calculate z
+z = L^2 / (D*t)
+
+# SF Safety Factor
+# 1.5 times the maximum allowable operating pressure
+Pt = 1.5 * MAOP
+SF = 1.5
+
+# Failure Stress Level
+# Original B31G
+M = (1 + 0.8*z)^0.5
+if z <= 20
+    Sf = Sflow * ((1 - ((2/3)*(d/t))) / (1 - (2/3)*(d/t)/M))
+elseif z > 20
+    Sf = (Sflow*(1-(d/t)))
+end
+
+# Estimated Failure Pressure
+Pf = 2*Sf*t/D
+
+# Estimated Safe Operating Pressure
+Ps = Pf/SF
+
+#  Acceptance
+if Sf >= SF*So   # check failure stress >= hoop stress * safety factor  or Failure prssure > MAWP or operating P * safety factor
+    print("Original B31G Level 1 = Pass\n")
+        print("True - failure stress ",round(Sf,digits=2)," psig >= hoop stress at operating or MAWP * safety factor ",round(SF*So,digits=2),"psig") # acceptance P
+elseif Pf >= SF * Po
+    print("Original B31G Level 1 = Pass\n")
+        print("True - failure pressure ",round(Pf,digits=2)," MAWP or operating P * safety factor ",round(SF*Po,digits=2),"psig") # acceptance P
+elseif Sf < SF*So || Pf < SF * Po
+    print("Original B31G Level 1 = Fail")
+end
+
+#  Modified B31G. For z ≤ 50,
+M = (1 + 0.6275*z - 0.003375*(z^2))^0.5
+if z <= 50
+    Sf = Sflow * ((1 - ((2/3)*(d/t))) / (1 - 2/3*((d/t)/M)))
+elseif z > 50
+    Sf = Sflow * ((1 - ((.85)*(d/t))) / (1 - .85*((d/t)/M)))
+end
+
+# Estimated Failure Pressure
+Pf = 2*Sf*t/D
+
+# Estimated Safe Operating Pressure
+Ps = Pf/SF
+
+#  Acceptance
+if Sf >= SF*So   # check failure stress >= hoop stress * safety factor  or Failure prssure > MAWP or operating P * safety factor
+    print("Modified B31G Level 1 = Pass\n")
+        print("True - failure stress ",round(Sf,digits=2)," psig >= hoop stress * safety factor ",round(SF*So,digits=2),"psig") # acceptance P
+elseif Pf >= SF * Po
+    print("Modified B31G Level 1 = Pass\n")
+        print("True - failure pressure ",round(Pf,digits=2)," MAWP or operating P * safety factor ",round(SF*Po,digits=2),"psig") # acceptance P
+elseif Sf < SF*So || Pf < SF * Po
+    print("Modified B31G Level 1 = Fail")
+end
+
+########################################################
+# start B31G iteration
+########################################################
+
+d = collect(0.0:0.01:1.51)
+safe_MAWP_out = zero(d)
+out_save = zeros(9,2)
+
+i = 11
+
+for i = 1:size(d,1)
+    let d = d, safe_MAWP_out = safe_MAWP_out, out_save = out_save
+
+# Level 1 Evaluation
+S = 70000  # specified minimum yield strength
+t = 1.51 # pipe wall thickness
+T = 1.51 # pipe wall thickness B31.8
+D = 8.625 # specified outside diameter of the pipe
+F = .6  # Design Factor = hoop stress/specified minimum yield strength
+#d = .175 # pit depth
+L = 6.0
+
+# Sflow = 1.1 * SMYS
+Sflow = 1.1 * S
+
+# Calculated MAOP
+MAOP = (2 * S * t * F * T) / D # B31.8
+Po = 2200 # operating or MAWP
+
+# Hoop Stress At Operating Pressure
+So = Po * D / 2 * t
+
+# Calculate z
+z = L^2 / (D*t)
+
+# SF Safety Factor
+# 1.5 times the maximum allowable operating pressure
+Pt = 1.5 * MAOP
+SF = Pt / MAOP # Safety factor
+
+# Failure Stress Level
+# Original B31G
+M = (1 + 0.8*z)^0.5
+if z <= 20
+    Sf = Sflow * ((1 - ((2/3)*(d[i]/t))) / (1 - (2/3)*(d[i]/t)/M))
+elseif z > 20
+    Sf = (Sflow*(1-(d[i]/t)))
+end
+
+# Estimated Failure Pressure
+Pf = 2*Sf*t/D
+
+# Estimated Safe Operating Pressure
+Ps = Pf/SF # safe operating pressure
+
+#  Acceptance
+if Sf >= SF*So   # check failure stress >= hoop stress * safety factor  or Failure prssure > MAWP or operating P * safety factor
+    print("Original B31G Level 1 = Pass\n")
+        print("True - failure stress ",round(Sf,digits=2)," psig >= hoop stress * safety factor ",round(SF*So,digits=2),"psig") # acceptance P
+elseif Pf >= SF * Po
+    print("Original B31G Level 1 = Pass\n")
+        print("True - failure pressure ",round(Pf,digits=2)," MAWP or operating P * safety factor ",round(SF*Po,digits=2),"psig") # acceptance P
+elseif Sf < SF*So || Pf < SF * Po
+    print("Original B31G Level 1 = Fail")
+end
+
+print("Failure pressure ",Pf,"\n")
+print("Failure pressure threshold ",SF * Po,"\n")
+
+labels = ["d" , "z","SF","Sf","Pf","So","Po","MAOP", "Hoop stress * SF", "MAWP or operating P * SF",]
+B31G_l1_params = [d[i],z,SF,Sf,Pf,So,Po,MAOP, SF*So, SF * Po]
+out = hcat(labels,B31G_l1_params)
+
+end # let end
+end
+
+i=1
+
+
+print(safe_MAWP_out)

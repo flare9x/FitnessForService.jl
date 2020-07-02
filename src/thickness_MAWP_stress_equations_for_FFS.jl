@@ -139,6 +139,26 @@ function PipingOlm(P::Float64; E::Float64=0.0, Do::Float64=0.0, t::Float64=0.0, 
     return Olm
 end
 
+# ASME B31.8 P
+@doc """
+    B31_8Piping_P(S::Float64; F::Float64=0.0, E::Float64=0.0, T::Float64=0.0, Do::Float64=0.0, t::Float64=0.0)
+
+    ASME B31.8\n
+    841.1 Steel Piping Systems Design Requirements\n
+    ð18Þ 841.1.1 Steel Pipe Design Formula\n
+Do # nominal outside diameter of pipe\n
+S # specified minimum yield strength\n
+F # design factor obtained from Table 841.1.6-1. In setting the values of the design factor, F, due consideration has been given and allowance has been made for the various underthickness \ntolerances provided for in the pipe specifications listed and approved for usage in this Code (B31.8)\n
+E # longitudinal joint factor obtained from Table 841.1.7-1 [see also para. 817.1.3(d)]\n
+T # temperature derating factor obtained from Table 841.1.8-1 (B31.8)\n
+t = nominal wall thickness\n
+P = design pressure\n
+""" ->
+function B31_8Piping_P(S::Float64; F::Float64=0.0, E::Float64=0.0, T::Float64=0.0, Do::Float64=0.0, t::Float64=0.0)
+    P = (2*S*t / Do) * F * E * T # eq (2C.147)
+    return P
+end
+
 # 2C.5.4 Required Thickness and MAWP – Boiler Tubes
 # 2C.5.5 Required Thickness and MAWP – Pipe Bends Subject To Internal Pressure
 # 2C.5.6 Required Thickness and MAWP for External Pressure

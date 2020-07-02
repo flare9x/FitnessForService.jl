@@ -31,22 +31,25 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
     equipment_group = "piping" # "vessel", "tank"
     flaw_location = "external" # "External","Internal"
+    pipe_code = "B31.8" # "B31.3", "B31.8"
     FCA_string = "internal"
     metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
     units = "lbs-in-psi" # "lbs-in-psi" or "nmm-mm-mpa"
     remaining_life = true
     tmm_forcing = true
-    tmm = .222
-    tnom = .365 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
-    trd = .365 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
-    FCAml = 0.05 # Future Corrosion Allowance applied to the region of metal loss.
-    FCA = 0.05 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
+    tmm = .949
+    tnom = 1.0 # nominal or furnished thickness of the component adjusted for mill undertolerance as applicable.
+    trd = 1.0 # uniform thickness away from the local metal loss location established by thickness measurements at the time of the assessment.
+    FCAml = 0.1 # Future Corrosion Allowance applied to the region of metal loss.
+    FCA = 0.1 # Future Corrosion Allowance applied to the region away from the metal loss (see Annex 2C, paragraph 2C.2.8).
     LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
-    Do = 10.75 # Outside Diameter
+    Do = 8.625 # Outside Diameter
     D = Do - 2*(tnom) # Inside Dia.
-    P = 740.0 # internal design pressure.
-    S = 20000.0 # allowable stress.
+    P = 10000.0 # internal design pressure.
+    S = 65000.0 # code allowable stress note if using B31.8 its SMYS - check design code criteria
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
+    F = 0.6 # B31.8 design factor
+    T = 1.0 # temperature factor B31.8
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .
     t = trd - LOSS - FCA # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.
@@ -84,8 +87,8 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
 # Perform level 1 assessment
 if (part5_applicability[1] == 1 && lmsd_satisfied == 1) # begin level 1 assessment
     #let part_5_lta_output = Array{Any,2},
-    part_5_lta_output = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
-        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
+    part_5_lta_output = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, pipe_code=pipe_code,equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
+        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, F=F, T=T, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
     part_5_lta_output
 
@@ -100,8 +103,8 @@ end
 # Perform level 2 assessment
 if (part5_applicability[2] == 1 && lmsd_satisfied == 1) # begin level 2 assessment
     #let part_5_lta_output = Array{Any,2},
-    part_5_lta_output = Part5LTALevel2(CTPGrid; annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
-        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, t=t,spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
+    part_5_lta_output = Part5LTALevel2(CTPGrid; annex2c_tmin_category=annex2c_tmin_category, pipe_code=pipe_code, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
+        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, tsl=tsl, t=t,F=F, T=T, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
     #end # let end
 elseif (part5_applicability[1] == 0 && lmsd_satisfied == 0)
     print("Level 1 Criteria Not Met - Perform Level 2 or 3 as applicable")
