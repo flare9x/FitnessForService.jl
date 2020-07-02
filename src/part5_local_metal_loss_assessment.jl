@@ -30,7 +30,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
     # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
     equipment_group = "piping" # "vessel", "tank"
-    flaw_location = "external" # "External","Internal"
+    flaw_location = "internal" # "External","Internal"
     pipe_code = "B31.8" # "B31.3", "B31.8"
     FCA_string = "internal"
     metal_loss_categorization = "LTA" # "LTA" or "Groove-Like Flaw"
@@ -45,7 +45,7 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss location at the time of the assessment.
     Do = 8.625 # Outside Diameter
     D = Do - 2*(tnom) # Inside Dia.
-    P = 10000.0 # internal design pressure.
+    P = 8139.13 # internal design pressure.
     S = 65000.0 # code allowable stress note if using B31.8 its SMYS - check design code criteria
     E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
     F = 0.6 # B31.8 design factor
@@ -53,11 +53,12 @@ CTPGrid = rotl90(CTPGrid) # rotate to correct orientation
     MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
     Yb31 = 0.4 # coefficient from ASME B31 Piping codes used for determining the pipe wall thickness, the coefficient can be determined from the following table that is valid for tmin < Do / 6 Annex 2C .
     t = trd - LOSS - FCA # thickness of the shell or pipe adjusted for mill tolerance, LOSS and FCA , or cylinder thickness at a conical transition for a junction reinforcement calculation adjusted for mill tolerance, LOSS and FCA , as applicable.
+    t = 1.0
     tsl = 0.0 # supplemental thickness for mechanical loads other than pressure that result in longitudinal stress; this thickness is usually obtained from the results of a weight case in a stress analysis of the piping system (see paragraph 2C.2.7).
     spacings = 0.5 # spacings determine by visual inspection to adequately ccategorizse the corrosion -----------+ may add to CTP_Grid function for plotting purposes
     # Flaw dimensions
-    s = 6.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
-    c = 2.0  # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
+    s = 20.0 # longitudinal extent or length of the region of local metal loss based on future corroded thickness,
+    c = 6.7  # circumferential extent or length of the region of local metal loss (see Figure 5.2 and Figure 5.10), based on future corroded thickness, tc .
     Ec = 1.0 # circumferential weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
     El = 1.0 # longitudinal weld joint efficiency. note if damage on weld see # 2C.2.5 Treatment of Weld and Riveted Joint Efficiency, and Ligament Efficiency
     RSFa = 0.9 # remaining strength factor - consult API 579 is go lower than 0.9

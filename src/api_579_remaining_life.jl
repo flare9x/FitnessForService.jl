@@ -77,35 +77,37 @@ tloss = tnom - tmm
 # STEP 2 – Determine the MAWPr for a series of increasing time increments using an effective corrosion
 # allowance and the nominal thickness in the computation. The effective corrosion allowance is determined
 # as follows:
-time = collect(1.0:1.0:50.0) # years
-crate = 0.005 # inches per year
-Csrate = 0.005 # long growth
-Ccrate = 0.005 # circ growth
-CAe = tnom .- (crate .* time)
+time_series = collect(1.0:1.0:50.0) # years
+crate = 0.015 # inches per year
+Csrate = 0.015 # long growth
+Ccrate = 0.015 # circ growth
+CAe = tnom .- (crate .* time_series)
 
 # STEP 3 – Using the results from STEP 2, determine the remaining life from a plot of the MAWP versus
 # time. The time at which the MAWPr curve intersects the equipment design pressure or equipment
 # MAWP is the remaining life of the component.
 #crate = 0.01
-MAWPr_out = zeros(size(time,1))
-for i = 1:length(time)
+MAWPr_out = zeros(size(time_series,1))
+for i = 1:length(time_series)
         let c = c, s=s, crate=crate, tloss = tloss
-    c = c + Ccrate * time[i]
-    s = s + Csrate * time[i]
+    c = c + Ccrate * time_series[i]
+    s = s + Csrate * time_series[i]
     tmm = CAe[i]
-    out = Part5LTALevel1(CTPGrid; tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
-        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
+    out = part_5_lta_output = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, pipe_code=pipe_code,equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
+        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, F=F, T=T, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
+
 MAWPr_out[i] = out[18,2]
 end # let
 end
 
 # create dataframe for plotting
-df = hcat(MAWPr_out,fill(crate,size(MAWPr_out,1)),time)
+df = hcat(MAWPr_out,fill(crate,size(MAWPr_out,1)),time_series)
 df = DataFrame(df)
 names = ["MAWPr","Corrosion Rates (ipy)","Time"]
 rename!(df, names)
 # x axis label
-x_label = join(["Time to Design P ",string(P)," psig - Years"],"")
+P = 8139.00
+x_label = join(["Time to Calculated P ",string(P)," psig - Years"],"")
 
 # Plot data
 p = plot(df, x=df.Time, y=df.MAWPr, color="Corrosion Rates (ipy)", Geom.line, Scale.y_continuous(format=:plain),
@@ -113,7 +115,7 @@ Guide.title("API 579 Remaining Life - tmm revised for specific corrosion rates -
 yintercept=[P],
 Geom.hline(size=0.5mm, style=:solid, color="red"),
 Guide.YTicks(ticks=collect(0:100:1500)),
-Guide.XTicks(ticks=time))
+Guide.XTicks(ticks=time_series))
 draw(PNG("C:/Users/Andrew.Bannerman/OneDrive - Shell/Documents/remaining_life_static_cr_rate.png",12inch,9inch),p)
 
 

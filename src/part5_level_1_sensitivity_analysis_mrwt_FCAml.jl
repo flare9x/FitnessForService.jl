@@ -86,7 +86,7 @@ gw = .4 # width of the Groove-Like Flaw based on future corroded condition.
 gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.
 β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.
 
-FCAml_i = collect(0:0.0001:.3)
+FCAml_i = collect(0:0.01:.5)
 RCA_out = zeros(19)
 iterations_count = zeros(size(FCAml_i,1))
 data_temp = FCAml_i[1]
@@ -98,8 +98,8 @@ for i = 1:size(FCAml_i,1)
     let RCA_out = RCA_out, data_temp = data_temp
 
     FCAml = FCAml_i[i]
-    global part_5_lta_output = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd, tnom=tnom,
-        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
+    global part_5_lta_output = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, pipe_code=pipe_code,equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
+        trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, F=F, T=T, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
 
 data_temp = part_5_lta_output[size(part_5_lta_output,1)+1:length(part_5_lta_output)]
 RCA_out = append!(RCA_out , data_temp)
@@ -120,7 +120,7 @@ names_df = hcat(String.(part_5_lta_output[1:size(part_5_lta_output,1)]),RCA_out)
 
 df = DataFrame(names_df)
 
-CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/PS_out_FCA.csv", df;delim=',')
+CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/15. PoC/3.24/PF-3001_FCA.csv", df;delim=',')
 
 # account for variance in the MRWT
 mrwt = tmm
