@@ -86,7 +86,7 @@ gw = .4 # width of the Groove-Like Flaw based on future corroded condition.
 gr = 0.1 # radius at the base of a Groove-Like Flaw based on future corroded condition.
 β = 40.0 # see (Figure 5.4) :: orientation of the groove-like flaw with respect to the longitudinal axis or a parameter to compute an effective fracture toughness for a groove being evaluated as a crack-like flaw, as applicable.
 
-FCAml_i = collect(0:0.01:.5)
+FCAml_i = collect(0:0.001:.5)
 RCA_out = zeros(19)
 iterations_count = zeros(size(FCAml_i,1))
 data_temp = FCAml_i[1]

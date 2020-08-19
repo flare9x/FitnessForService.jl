@@ -27,6 +27,7 @@ Sflow = 1.1 * S
 
 # Calculated MAOP
 MAOP = (2 * S * t * F * T) / D # B31.8
+t = (8772.378 * Do) / (2 * F * E * T * S)
 Po = 2200    # set to MAWP or operating
 
 # Hoop Stress At Operating Pressure

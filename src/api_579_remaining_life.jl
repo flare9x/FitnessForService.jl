@@ -78,9 +78,9 @@ tloss = tnom - tmm
 # allowance and the nominal thickness in the computation. The effective corrosion allowance is determined
 # as follows:
 time_series = collect(1.0:1.0:50.0) # years
-crate = 0.015 # inches per year
-Csrate = 0.015 # long growth
-Ccrate = 0.015 # circ growth
+crate = 0.04661 # inches per year
+Csrate = 0.04661 # long growth
+Ccrate = 0.046615 # circ growth
 CAe = tnom .- (crate .* time_series)
 
 # STEP 3 – Using the results from STEP 2, determine the remaining life from a plot of the MAWP versus
@@ -114,7 +114,7 @@ p = plot(df, x=df.Time, y=df.MAWPr, color="Corrosion Rates (ipy)", Geom.line, Sc
 Guide.title("API 579 Remaining Life - tmm revised for specific corrosion rates - Years for MAWPr to reach equipment Design P at a specific corrosion rate (ipy)"), Guide.xlabel(x_label),Guide.ylabel("MAWPr"),
 yintercept=[P],
 Geom.hline(size=0.5mm, style=:solid, color="red"),
-Guide.YTicks(ticks=collect(0:100:1500)),
+Guide.YTicks(ticks=collect(0:200:10000)),
 Guide.XTicks(ticks=time_series))
 draw(PNG("C:/Users/Andrew.Bannerman/OneDrive - Shell/Documents/remaining_life_static_cr_rate.png",12inch,9inch),p)
 
