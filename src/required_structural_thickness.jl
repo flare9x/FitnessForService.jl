@@ -62,11 +62,14 @@ My = My * (wpipe + wprod + winsul + wother) * ((span * 12)^2)
 σy = (My * y)  / σmax # in4
 
 # Step 5
-# Ipipe = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
+# σy = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
 # find x
-solve1 = (π / 64) * (Do^4) - σy
-solve1 = solve1 / (π / 64)
-Di = (solve1)^(1/4)
+# divide both sides by (π / 64)
+solve = σy / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
+# subtract Do^4 from both sides
+solve = solve - Do^4 # -x^4 = solve - Do^4
+solve = solve *-1
+Di = (solve)^(1/4)
 Ipipe = (π / 64) * (Do^4 - Di^4)
 
 # Step 6 - Calcualte the minimum structural thickness
@@ -139,11 +142,14 @@ My = My * (wpipe + wprod + winsul + wother) * ((span * 12)^2)
 σy = (My * y)  / σmax # in4
 
 # Step 5
-# Ipipe = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
+# σy = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
 # find x
-solve1 = (π / 64) * (Do^4) - σy
-solve1 = solve1 / (π / 64)
-Di = (solve1)^(1/4)
+# divide both sides by (π / 64)
+solve = σy / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
+# subtract Do^4 from both sides
+solve = solve - Do^4 # -x^4 = solve - Do^4
+solve = solve *-1
+Di = (solve)^(1/4)
 Ipipe = (π / 64) * (Do^4 - Di^4)
 
 # Step 6 - Calcualte the minimum structural thickness
@@ -216,11 +222,14 @@ for i = 1:size(spans,1)
     σy = (My * y)  / σmax # in4
 
     # Step 5
-    # Ipipe = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
+    # σy = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
     # find x
-    solve1 = (π / 64) * (Do^4) - σy
-    solve1 = solve1 / (π / 64)
-    Di = (solve1)^(1/4)
+    # divide both sides by (π / 64)
+    solve = σy / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
+    # subtract Do^4 from both sides
+    solve = solve - Do^4 # -x^4 = solve - Do^4
+    solve = solve *-1
+    Di = (solve)^(1/4)
     Ipipe = (π / 64) * (Do^4 - Di^4)
 
     # Step 6 - Calcualte the minimum structural thickness
