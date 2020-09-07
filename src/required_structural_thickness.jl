@@ -15,7 +15,8 @@ tinsul = 3.0 # insulation thickness
 pinsul = 0.004919 # density of insulation - note set at calcium silicate lb/in3
 pproduct = 8.5 # product density (Water)  lb/gal
 My = 0.1071 # Moment in the Y direction (up or down), in-lb
-span = 24 # in feet
+L = 24 # span in feet
+l = L * 12 # span in inches
 y = Do / 2 # distance from the center axis to the outer stress element, (1/2 Diameter), in
 
 
@@ -49,8 +50,14 @@ wprod = (volume_cubic_gal * pproduct) / 12 # lb/inches
 
 wother = 0.0 # lb/inch
 
+wmax = (wpipe + wprod + winsul + wother) # maximum weight lb/in
+W = wmax * l # total weight over the full span
+R = (wmax * l) / 2 # reactions, R each support (2x)
+
 # Step 3 -  Determine the Moments that will be used to calculate the bending stress in the pipe.  The Moments are loads created due to the weight of the overall piping system
-My = My * (wpipe + wprod + winsul + wother) * ((span * 12)^2)
+#My = My * (wmax) * ((L * 12)^2) # AISC equation
+#My = wmax * (L*12)^2 / 8 # wL^2/8 # for simply supported beam with a uniformly distributed load - Max shear force at either end of the beam (supports) - maximum bending moment - middle of beam
+My = (R * (l/2)) - (wmax/2)
 
 # Determine structural wall thickness
 # Beam Flexural Stress Method
@@ -59,18 +66,26 @@ My = My * (wpipe + wprod + winsul + wother) * ((span * 12)^2)
 σmax = S # code allowable stress limit
 
 # If the effect of wind loading is ignored, then σy = σmax because forces are only acting in the downward direction, -Y.
-σy = (My * y)  / σmax # in4
+# σy = [ My * y ] / Ipipe
+Ipipe_solve = (My * y)  / σmax # in4 - algebra to find Ipipe
 
-# Step 5
-# σy = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
+# Step 5 - Moment of inertia
+# Ipipe = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
 # find x
 # divide both sides by (π / 64)
-solve = σy / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
+solve = Ipipe_solve / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
 # subtract Do^4 from both sides
 solve = solve - Do^4 # -x^4 = solve - Do^4
 solve = solve *-1
 Di = (solve)^(1/4)
 Ipipe = (π / 64) * (Do^4 - Di^4)
+
+# Stress in y (up and down position)
+σy = (My * y) / Ipipe
+
+# maximum deflection
+δmax = 0.0065 * wmax * (L *12)^4 / (29000000 * Ipipe) # AISC equation
+# defelction = (5 * wmax * 288^4) / (384 * 29000000 * Ipipe)
 
 # Step 6 - Calcualte the minimum structural thickness
 tstruct = (Do - Di) / 2
@@ -94,8 +109,9 @@ psteel = .284 # density of the steel = 0.284 lb/in3
 tinsul = 0.0 # insulation thickness
 pinsul = 0.0049 # density of insulation - note set at calcium silicate lb/in3
 pproduct = 8.5 # product density (Water)  lb/gal
-My = 0.1071
-span = 20 # in feet
+My = 0.1071 # AISC equation
+L = 24 # span in feet
+l = L * 12 # span in inches
 y = Do / 2 # distance from the center axis to the outer stress element, (1/2 Diameter), in
 
 
@@ -129,8 +145,11 @@ wprod = (volume_cubic_gal * pproduct) / 12 # lb/inches
 
 wother = 0.0 # lb/inch
 
+wmax = (wpipe + wprod + winsul + wother) # maximum weight lb/in
+
 # Step 3 -  Determine the Moments that will be used to calculate the bending stress in the pipe.  The Moments are loads created due to the weight of the overall piping system
-My = My * (wpipe + wprod + winsul + wother) * ((span * 12)^2)
+My = My * (wmax) * ((L * 12)^2) # AISC equation
+#My = wmax * (L*12)^2 / 8 # wL^2/8 # for simply supported beam with a uniformly distributed load - Max shear force at either end of the beam (supports) - maximum bending moment - middle of beam
 
 # Determine structural wall thickness
 # Beam Flexural Stress Method
@@ -139,47 +158,56 @@ My = My * (wpipe + wprod + winsul + wother) * ((span * 12)^2)
 σmax = S # code allowable stress limit
 
 # If the effect of wind loading is ignored, then σy = σmax because forces are only acting in the downward direction, -Y.
-σy = (My * y)  / σmax # in4
+# σy = [ My * y ] / Ipipe
+Ipipe_solve = (My * y)  / σmax # in4 - algebra to find Ipipe
 
-# Step 5
-# σy = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
+# Step 5 - Moment of inertia
+# Ipipe = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
 # find x
 # divide both sides by (π / 64)
-solve = σy / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
+solve = Ipipe_solve / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
 # subtract Do^4 from both sides
 solve = solve - Do^4 # -x^4 = solve - Do^4
 solve = solve *-1
 Di = (solve)^(1/4)
 Ipipe = (π / 64) * (Do^4 - Di^4)
 
+# Stress in y (up and down position)
+σy = (My * y) / Ipipe
+
+# maximum deflection at code allowable S
+δmax = 0.0065 * (wmax) * (L *12)^4 / (29000000 * Ipipe) # AISC equation
+# defelction = (5 * wmax * 288^4) / (384 * 29000000 * Ipipe)
+
 # Step 6 - Calcualte the minimum structural thickness
 tstruct = (Do - Di) / 2
-print("Structural tmin - bend stress theory = ", tstruct)
+    print("Structural tmin - bend stress theory = ", tstruct)
 
-#### iteration
-spans = collect(1:1:60)
-out = zeros(size(spans,1))
+###########
+    #### iteration
+    spans = collect(1:1:60)
+    out = zeros(size(spans,1))
 
-for i = 1:size(spans,1)
-    # Input parameters
-    P = 285 # pressure
-    Do = 2.375 # outside diameter
-    S = 20000 # code allowable stress
-    E = 1 # weld joint efficieny
-    W = 1.0
-    Y = 0.4
-    tnom = 0.218
-    D = Do - (2*(tnom)) # inside diameter
-    psteel = .284 # density of the steel = 0.284 lb/in3
-    tinsul = 0.0 # insulation thickness
-    pinsul = 0.0049 # density of insulation - note set at calcium silicate lb/in3
-    pproduct = 8.5 # product density (Water)  lb/gal
-    My = 0.1071
-    span = spans[i] # in feet
-    y = Do / 2 # distance from the center axis to the outer stress element, (1/2 Diameter), in
+    for i = 1:size(spans,1)
+        # Input parameters
+        P = 285 # pressure
+        Do = 2.375 # outside diameter
+        S = 20000 # code allowable stress
+        E = 1 # weld joint efficieny
+        W = 1.0
+        Y = 0.4
+        tnom = 0.218
+        D = Do - (2*(tnom)) # inside diameter
+        psteel = .284 # density of the steel = 0.284 lb/in3
+        tinsul = 0.0 # insulation thickness
+        pinsul = 0.0049 # density of insulation - note set at calcium silicate lb/in3
+        pproduct = 8.5 # product density (Water)  lb/gal
+        My = 0.1071
+        span = spans[i] # in feet
+        y = Do / 2 # distance from the center axis to the outer stress element, (1/2 Diameter), in
 
 
-    # Step 1 - Determine tpress , the thickness needed to contain the design pressure at the design temperature
+        # Step 1 - Determine tpress , the thickness needed to contain the design pressure at the design temperature
     # Pressure design thickness
     t = (P * Do) / (2*((S * E * W) + (P * Y)))
 
@@ -219,13 +247,14 @@ for i = 1:size(spans,1)
     σmax = S # code allowable stress limit
 
     # If the effect of wind loading is ignored, then σy = σmax because forces are only acting in the downward direction, -Y.
-    σy = (My * y)  / σmax # in4
+    # σy = [ My * y ] / Ipipe
+    Ipipe_solve = (My * y)  / σmax # in4 - algebra to find Ipipe
 
-    # Step 5
-    # σy = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
+    # Step 5 - Moment of inertia
+    # Ipipe = (π / 64) * (Do^4 - x^4) # use algebra to solve for x
     # find x
     # divide both sides by (π / 64)
-    solve = σy / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
+    solve = Ipipe_solve / (π / 64) # (Do^4 - x^4) = (28.77 / (π / 64))
     # subtract Do^4 from both sides
     solve = solve - Do^4 # -x^4 = solve - Do^4
     solve = solve *-1
@@ -248,7 +277,7 @@ using DataFrames
 using CSV
 using Gadfly
 df = DataFrame(hcat(spans,out))
-#CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/struct_out1.csv", df;delim=',')
+CSV.write("C:/Users/Andrew.Bannerman/Desktop/MARS/struct_out2.csv", df;delim=',')
 
 plot(x=df.x1,y=df.x2, Geom.line,Theme(default_color=colorant"blue"),
 Theme(background_color="white"),
