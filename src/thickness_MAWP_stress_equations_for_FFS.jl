@@ -164,6 +164,43 @@ end
 
 # 2C.5.4 Required Thickness and MAWP – Boiler Tubes
 # 2C.5.5 Required Thickness and MAWP – Pipe Bends Subject To Internal Pressure
+#=
+# API 579 - 2C.5.5 Required Thickness and MAWP – Pipe Bends Subject To Internal Pressure
+P = 1900 # design pressure
+tnom = .719 # nominal WT
+LOSS = 0.0 # uniform metal loss away from the damage area at the time of the inspection.
+FCA = 0.05 # future corrosion allowance
+MA = 0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
+t = tnom - LOSS - FCA # adjuted for LOSS and FCA
+NPS = 10 # Nominal pipe size
+Do = 10.75 # Outside Diameter
+Di = Do-(2*tnom)+2*(LOSS+FCA) # inside diameter
+S = 20000 # code allowable material stress
+E = 1.0 # weld joint efficiency
+W = 1.0 # wed joint reduction factor
+Yb31 = 0.4 # B31.3 temperature coefficient
+Rb = 1.5 * NPS   # Centerline bend radius (see Figure 2C.1).
+Rm = (Do+Di)/4 # Mean radius of the component; use the large end radius for a conical shell .
+
+## Check applicability
+if (Rm/t <= 10)
+    print("Considered thin wall piping and 2C.5.5 is applicable")
+else
+    print("Considered thick wall piping - consult DIN 2413, Parts 1 and 2.")
+end
+
+##
+
+θo = 20 # The circumferential angle measured from the crown of the elbow (+90° at the extrados, -90° at the intrados)
+Lf = ((Rb/Rm)+(sind(θo)/2))/((Rb/Rm)+sind(θo)) # The Lorenz factor is computed using Equation (2C.161).
+tCmin=(P*Do)/(2*(S*E/Lf)+(P*Yb31))+MA # Minimum required thickness based on the circumferential membrane stress for a cylinder or cone, as applicable
+MAWPc =(2*((S*E)/Lf)*(t-MA))/(Do-(2*Yb31*(t-MA))) # Maximum allowable working pressure based on circumferential stress
+
+print("\nMinimum required thickness based on the circumferential membrane stress: ", round(tCmin,digits=3))
+print("\nMaximum allowable working pressure based on circumferential stress: ", round(MAWPc,digits=3),"psig")
+print("\nMinimum required thickness based on the circumferential membrane stress @ PSV Set pressure 1900psig: ", round(tCmin,digits=3))
+print("\nMaximum allowable working pressure based on circumferential stress @ PSV Set pressure 1900psig: ", round(MAWPc,digits=3),"psig")
+=#
 # 2C.5.6 Required Thickness and MAWP for External Pressure
 # 2C.5.7 Branch Connections
 
