@@ -1,0 +1,56 @@
+# UG-34 UNSTAYED FLAT HEADS AND COVERS
+# MANDATORY APPENDIX 2
+# RULES FOR BOLTED FLANGE CONNECTIONS WITH RING TYPE    GASKETS
+
+# UG-34 Equation 2 - substituting SE with Sf ASME B31.3 nomenclature
+# UG-34 Sketch K
+# Check valve bonnet is a self energized gaskets - Per appendix H = FKM (Viton) seal
+# Self‐energizing gaskets may be considered to require an inconsequential amount of bolting force to produce
+# a seal. Bolting, however, must be pretightened to provide a bolt load sufficient to withstand the hydrostatic end force H.
+
+d = 3.75 # diameter, or short span, measured as indicated in Figure UG-34
+C = 0.3 # a factor depending upon the method of attachment of head, shell dimensions, and other items as listed in (d) below, dimensionless
+P = 285 # internal design pressure (see UG-21)
+S = 20000 # maximum allowable stress value in tension from applicable table of stress values referenced by UG-23
+E = 1.0 # joint efficiency, from Table UW-12, of any Category A weld as defined in UW-3(a)
+Wb313 = 1.0 # ASME B31.3 weld joint strength reduction factor per para. 302.3.5(e)]
+Sf = S*E*Wb313 # B31.3 adaptation = product SEW [of the stress value, S; the appropriate quality factor, E, from Table A-1A or Table A-1B; and weld joint strength reduction factor per para. 302.3.5(e)]
+bo = 0 # basic gasket seating width (from Table 2-5.2)
+b = 0 # effective gasket or joint‐contact‐surface seating width [see Note in 2-5(c)(1)]
+# diameter at location of gasket load reaction. Except as noted in sketch (1) of Figure 2-4, G is defined as follows (see Table 2-5.2):
+# (a) when bo ≤ 1/4 in. (6 mm), G = mean diameter of gasket contact face
+# (b) when bo > 1/4 in. (6 mm), G = outside diameter of gasket contact face less 2b
+G = 3.75 # 2.067 2.367 gasket reaction location
+Hg = 0.3125 # gasket moment arm, equal to the radial distance from the centerline of the bolts to the line of the gasket reaction, as shown in Table 2-5.2
+m = 0 # gasket factor, obtain from Table 2-5.1 [see Note in 2-5(c)(1)]
+y = 0 # gasket or joint‐contact‐surface unit seating load, [see Note 1, 2-5(c)]
+H = 0.785*(G^2)*P # total hydrostatic end force = 0.785G^2P
+Hp = 2*b * 3.14 * G* m* P # = total joint‐contact surface compression load = 2b × 3.14 GmP
+
+# Required bolt load for seating & operating conditions
+Sa = 23000 # allowable bolt stress at atmospheric temperature (see UG-23)
+Sb = 23000 # allowable bolt stress at design temperature (see UG-23)
+Nb = 4 # Number of bolts
+Am1 = Wm1 / Sb # total cross‐sectional area of bolts at root of thread or section of least diameter under stress, required for the operating conditions = Wm1 / Sb
+Am2 = Wm2 / Sa # total cross‐sectional area of bolts at root of thread or section of least diameter under stress, required for gasket seating = Wm2 / Sa
+Am = maximum([Am1,Am2]) # total required cross‐sectional area of bolts, taken as the greater of Am1 and Am2
+D =  5/8 # bolt diamter
+tpi = 11 # threads per inch
+Ab = ((π/4) *(D-(1.3/tpi))^2) * Nb # cross‐sectional area of the bolts using the root diameter [= (3.141592654/4) *[D-(1.3/n)]^2)] of the thread or least diameter of unthreaded position, if less
+if Ab > Am
+    print("There is excess bolt area (Ab) above total required area (Am) - acceptable")
+else
+    print("There is no excess bolt area (Ab) above total required area (Am)- unacceptable")
+end
+Wm1 = H + Hp # 2-5(e)(1) = minimum required bolt load for the operating conditions [see 2-5(c)]. For flange pairs used to contain a tubesheet for a floating head or a
+      # U‐tube type of heat exchangers, or for any other similar design, Wm1 shall be the larger of the values as individually calculated for each flange,
+      # and that value shall be used for both flanges.
+Wm2 = π*b*G*y # minimum required bolt load for gasket seating [see 2-5(c)]. For flange pairs used to contain a tubesheet for a floating head or U‐tube type of
+              # heat exchanger, or for any other similar design where the flanges or gaskets are not the same, Wm2 shall be the larger of the values calculated
+              # for each flange and that value shall be used for both flanges.
+W = Wm1 # Flange Design Bolt Load W - 2-5(e)(4)
+W_gasket_seating = ((Am + Ab)*Sa) / 2 # Flange Design Bolt Load W For gasket seating - 2-5(e)(5)
+
+# UG-34 - Equation (eq. (2))
+t = d*(sqrt((C*P / Sf) + ((1.9*W_gasket_seating*Hg)/(Sf*d^3)))) # note this is substituting with Sf ASME B31.3 nomenclature
+print("Minimum required thickness ",round(t,digits=3)," inches")
