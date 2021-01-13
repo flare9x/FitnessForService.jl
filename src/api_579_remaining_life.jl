@@ -25,6 +25,7 @@ Do = 10.75 # Outside Diameter
 D = Do - 2*(tnom) # Inside Dia.
 P = 740.0 # internal design pressure.
 F = 0.0 # B31.8 design factor
+T = 0.0 # temperature factor B31.8
 S = 20000.0 # allowable stress.
 E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
 MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
