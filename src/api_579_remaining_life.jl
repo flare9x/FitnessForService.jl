@@ -4,7 +4,7 @@ using DataFrames
 using Cairo
 
 # Data variables
-
+pipe_code = "B31.3"
 annex2c_tmin_category = "Straight Pipes Subject To Internal Pressure" # ["Cylindrical Shell","Spherical Shell","Hemispherical Head","Elliptical Head","Torispherical Head","Conical Shell","Toriconical Head","Conical Transition","Nozzles Connections in Shells",
 # "Junction Reinforcement Requirements at Conical Transitions","Tubesheets","Flat head to cylinder connections","Bolted Flanges","Straight Pipes Subject To Internal Pressure","Boiler Tubes","Pipe Bends Subject To Internal Pressure",
 # "MAWP for External Pressure","Branch Connections","API 650 Storage Tanks"]
