@@ -24,6 +24,7 @@ LOSS = 0.0 #the amount of uniform metal loss away from the local metal loss loca
 Do = 10.75 # Outside Diameter
 D = Do - 2*(tnom) # Inside Dia.
 P = 740.0 # internal design pressure.
+F = 0.0 # B31.8 design factor
 S = 20000.0 # allowable stress.
 E = 1.0 # weld joint efficiency or quality factor from the original construction code, if unknown use 0.7.
 MA = 0.0 # mechanical allowances (thread or groove depth); for threaded components, the nominal thread depth (dimension h of ASME B.1.20.1) shall apply.
@@ -93,7 +94,7 @@ for i = 1:length(time_series)
     c = c + Ccrate * time_series[i]
     s = s + Csrate * time_series[i]
     tmm = CAe[i]
-    out = part_5_lta_output = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, pipe_code=pipe_code,equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
+    out = Part5LTALevel1(CTPGrid; remaining_life=remaining_life,tmm_forcing=tmm_forcing, tmm=tmm, annex2c_tmin_category=annex2c_tmin_category, pipe_code=pipe_code,equipment_group=equipment_group, flaw_location=flaw_location, FCA_string=FCA_string, metal_loss_categorization=metal_loss_categorization, units=units, Lmsd=Lmsd,tnom=tnom,
         trd=trd, FCA=FCA, FCAml=FCAml, LOSS=LOSS, Do=Do, D=D, P=P, S=S, E=E, MA=MA, Yb31=Yb31, t=t,tsl=tsl, F=F, T=T, spacings=spacings, s=s, c=c, El=El, Ec=Ec, RSFa=RSFa, gl=gl, gw=gw, gr=gr,β=β)
 
 MAWPr_out[i] = out[18,2]
