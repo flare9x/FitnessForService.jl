@@ -1,6 +1,6 @@
 name = "FitnessForService"
 uuid = "f6a7cde8-5676-4437-9bb3-a56da377d6b0"
-authors = ""
+authors = ["Andrew Bannerman <bannerman1985@gmail.com>"]
 version = "0.0.0"
 
 [deps]
